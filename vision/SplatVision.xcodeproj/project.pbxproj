@@ -1,0 +1,546 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		029EBFD6C17B388B07D2E0F6 /* HeadPoseResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99F2C956966A9C9C09D4767 /* HeadPoseResolverTests.swift */; };
+		046F148BF5E52C50E5A4155B /* SplatSceneRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B5D2E2EFC60EA64D7FFDA1 /* SplatSceneRenderer.swift */; };
+		05CD5B499ECE1DC7DA80D8FF /* SplatIO in Frameworks */ = {isa = PBXBuildFile; productRef = 13C065B6D840477E014D74E8 /* SplatIO */; };
+		20A4B259373EB5BE6D34893C /* MockPLYTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38B7DAC555DD65D85C5FF433 /* MockPLYTests.swift */; };
+		24F1D91C5DAFC4A61629289E /* SplatLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21A2028701B277D70DD32DDE /* SplatLoader.swift */; };
+		3D7AFC98C6C03705EE9F549B /* PlacementController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53EE2966B88FF32C2552F60C /* PlacementController.swift */; };
+		4A06D4B5D17890BF99F41A25 /* SplatRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A727540068DE4F6B63FAACFA /* SplatRequest.swift */; };
+		4EF87593230B0EAF0EB06C86 /* SceneTransformsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61F39BEDD4C7A7392ABD1968 /* SceneTransformsTests.swift */; };
+		5EB907A6E751F32B9A070780 /* RendererTaskExecutor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 314DF6A1F8A0FC35C48F984E /* RendererTaskExecutor.swift */; };
+		761C39B5FDEE8E28F24B5441 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD2724A3C4DCF55F0BB11747 /* ContentView.swift */; };
+		7AF67B0ACD3BB2342C53DF7C /* HeadPoseResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45AD1A879E69C591D9071871 /* HeadPoseResolver.swift */; };
+		7C278246B9DB8EC456C8EAC6 /* ContentStageConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B7CDC60F5BD3E9938487091 /* ContentStageConfiguration.swift */; };
+		AB92C76A033A784D3CD06DC6 /* TestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20D78D6AF04A2885E5CD246B /* TestHelpers.swift */; };
+		B7CB2475FFAD508E395C6888 /* SceneTransforms.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E01A29F4509BEA7895D23DA /* SceneTransforms.swift */; };
+		EC45C87CB78451D3DC890D88 /* MetalSplatter in Frameworks */ = {isa = PBXBuildFile; productRef = 40809E0C5870BE18C62BF177 /* MetalSplatter */; };
+		F04EAFEC297AB8184E722A38 /* SplatVisionApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C77F3E7E31E15E813224C50 /* SplatVisionApp.swift */; };
+		FE9B6A2AAAE278729B2B9234 /* PlacementControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD1744D634C51E0F923126D /* PlacementControllerTests.swift */; };
+		FEE033A1BF528CC763C68AF1 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EFD535AB3C5E05CF2372211 /* AppModel.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		775AD7FA42C14D55DC588860 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2FAC3159B2027B986555485A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5EDD99C3A413A8A556B01FCC;
+			remoteInfo = SplatVision;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		053DBE7C86EEB39824728E5C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		1FE6785EABE027D0EE96DCD6 /* SplatVisionTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = SplatVisionTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		20D78D6AF04A2885E5CD246B /* TestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestHelpers.swift; sourceTree = "<group>"; };
+		21A2028701B277D70DD32DDE /* SplatLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplatLoader.swift; sourceTree = "<group>"; };
+		314DF6A1F8A0FC35C48F984E /* RendererTaskExecutor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RendererTaskExecutor.swift; sourceTree = "<group>"; };
+		38B7DAC555DD65D85C5FF433 /* MockPLYTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPLYTests.swift; sourceTree = "<group>"; };
+		45AD1A879E69C591D9071871 /* HeadPoseResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadPoseResolver.swift; sourceTree = "<group>"; };
+		4E01A29F4509BEA7895D23DA /* SceneTransforms.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneTransforms.swift; sourceTree = "<group>"; };
+		53EE2966B88FF32C2552F60C /* PlacementController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlacementController.swift; sourceTree = "<group>"; };
+		5EC0155F0EA46037C2494D29 /* SplatVision.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = SplatVision.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		61F39BEDD4C7A7392ABD1968 /* SceneTransformsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneTransformsTests.swift; sourceTree = "<group>"; };
+		6B7CDC60F5BD3E9938487091 /* ContentStageConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentStageConfiguration.swift; sourceTree = "<group>"; };
+		6C77F3E7E31E15E813224C50 /* SplatVisionApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplatVisionApp.swift; sourceTree = "<group>"; };
+		8EFD535AB3C5E05CF2372211 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
+		A727540068DE4F6B63FAACFA /* SplatRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplatRequest.swift; sourceTree = "<group>"; };
+		B99F2C956966A9C9C09D4767 /* HeadPoseResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadPoseResolverTests.swift; sourceTree = "<group>"; };
+		BCD1744D634C51E0F923126D /* PlacementControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlacementControllerTests.swift; sourceTree = "<group>"; };
+		C4B5D2E2EFC60EA64D7FFDA1 /* SplatSceneRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplatSceneRenderer.swift; sourceTree = "<group>"; };
+		CD2724A3C4DCF55F0BB11747 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		47653913295A29EBF3B5AD36 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EC45C87CB78451D3DC890D88 /* MetalSplatter in Frameworks */,
+				05CD5B499ECE1DC7DA80D8FF /* SplatIO in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		16ED0D99A2CEFECF138A1533 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				5EC0155F0EA46037C2494D29 /* SplatVision.app */,
+				1FE6785EABE027D0EE96DCD6 /* SplatVisionTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		34AA95811EF1BCD436DB73D2 /* SplatVisionTests */ = {
+			isa = PBXGroup;
+			children = (
+				B99F2C956966A9C9C09D4767 /* HeadPoseResolverTests.swift */,
+				38B7DAC555DD65D85C5FF433 /* MockPLYTests.swift */,
+				BCD1744D634C51E0F923126D /* PlacementControllerTests.swift */,
+				61F39BEDD4C7A7392ABD1968 /* SceneTransformsTests.swift */,
+				20D78D6AF04A2885E5CD246B /* TestHelpers.swift */,
+			);
+			path = SplatVisionTests;
+			sourceTree = "<group>";
+		};
+		52AC1834C09758B46BCF8DE9 /* SplatVision */ = {
+			isa = PBXGroup;
+			children = (
+				BB9BCD48BF8D4CC1901A2C62 /* App */,
+				70D0B8E989FBB12103AEBC5B /* Rendering */,
+				BB999EE50DD8FF634968E1DB /* Resources */,
+				6F20718276945B542C4A52C7 /* Views */,
+			);
+			path = SplatVision;
+			sourceTree = "<group>";
+		};
+		6F20718276945B542C4A52C7 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				CD2724A3C4DCF55F0BB11747 /* ContentView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		70D0B8E989FBB12103AEBC5B /* Rendering */ = {
+			isa = PBXGroup;
+			children = (
+				6B7CDC60F5BD3E9938487091 /* ContentStageConfiguration.swift */,
+				45AD1A879E69C591D9071871 /* HeadPoseResolver.swift */,
+				53EE2966B88FF32C2552F60C /* PlacementController.swift */,
+				314DF6A1F8A0FC35C48F984E /* RendererTaskExecutor.swift */,
+				4E01A29F4509BEA7895D23DA /* SceneTransforms.swift */,
+				21A2028701B277D70DD32DDE /* SplatLoader.swift */,
+				C4B5D2E2EFC60EA64D7FFDA1 /* SplatSceneRenderer.swift */,
+			);
+			path = Rendering;
+			sourceTree = "<group>";
+		};
+		BB999EE50DD8FF634968E1DB /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				053DBE7C86EEB39824728E5C /* Info.plist */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		BB9BCD48BF8D4CC1901A2C62 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				8EFD535AB3C5E05CF2372211 /* AppModel.swift */,
+				A727540068DE4F6B63FAACFA /* SplatRequest.swift */,
+				6C77F3E7E31E15E813224C50 /* SplatVisionApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		CBC82AB4F556A99382777A4B = {
+			isa = PBXGroup;
+			children = (
+				52AC1834C09758B46BCF8DE9 /* SplatVision */,
+				34AA95811EF1BCD436DB73D2 /* SplatVisionTests */,
+				16ED0D99A2CEFECF138A1533 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		5EDD99C3A413A8A556B01FCC /* SplatVision */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9389ACDBA9A74B2F1F14EA27 /* Build configuration list for PBXNativeTarget "SplatVision" */;
+			buildPhases = (
+				3D36E01B9E3198FC96851315 /* Sources */,
+				B60983E97079E0B88EB6E707 /* Generate mock PLY */,
+				47653913295A29EBF3B5AD36 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SplatVision;
+			packageProductDependencies = (
+				40809E0C5870BE18C62BF177 /* MetalSplatter */,
+				13C065B6D840477E014D74E8 /* SplatIO */,
+			);
+			productName = SplatVision;
+			productReference = 5EC0155F0EA46037C2494D29 /* SplatVision.app */;
+			productType = "com.apple.product-type.application";
+		};
+		7B5F284ADD55529AEAC317D1 /* SplatVisionTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E5417C451AA5752691091B69 /* Build configuration list for PBXNativeTarget "SplatVisionTests" */;
+			buildPhases = (
+				30E15F90DE178F41433DA574 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				34D24C59C461DE353CB9BF7C /* PBXTargetDependency */,
+			);
+			name = SplatVisionTests;
+			packageProductDependencies = (
+			);
+			productName = SplatVisionTests;
+			productReference = 1FE6785EABE027D0EE96DCD6 /* SplatVisionTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		2FAC3159B2027B986555485A /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					5EDD99C3A413A8A556B01FCC = {
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 891532A173FB846B26296ACE /* Build configuration list for PBXProject "SplatVision" */;
+			developmentRegion = "zh-Hant";
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				"zh-Hant",
+			);
+			mainGroup = CBC82AB4F556A99382777A4B;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				D175F285D5932D9FCDB75560 /* XCRemoteSwiftPackageReference "MetalSplatter" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 16ED0D99A2CEFECF138A1533 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				5EDD99C3A413A8A556B01FCC /* SplatVision */,
+				7B5F284ADD55529AEAC317D1 /* SplatVisionTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		B60983E97079E0B88EB6E707 /* Generate mock PLY */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/tools/make_mock_ply.py",
+			);
+			name = "Generate mock PLY";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/mock_sharp.ply",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -euo pipefail\nmkdir -p \"$(dirname \"${SCRIPT_OUTPUT_FILE_0}\")\"\n/usr/bin/python3 \"${SCRIPT_INPUT_FILE_0}\" \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		30E15F90DE178F41433DA574 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				029EBFD6C17B388B07D2E0F6 /* HeadPoseResolverTests.swift in Sources */,
+				20A4B259373EB5BE6D34893C /* MockPLYTests.swift in Sources */,
+				FE9B6A2AAAE278729B2B9234 /* PlacementControllerTests.swift in Sources */,
+				4EF87593230B0EAF0EB06C86 /* SceneTransformsTests.swift in Sources */,
+				AB92C76A033A784D3CD06DC6 /* TestHelpers.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3D36E01B9E3198FC96851315 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FEE033A1BF528CC763C68AF1 /* AppModel.swift in Sources */,
+				7C278246B9DB8EC456C8EAC6 /* ContentStageConfiguration.swift in Sources */,
+				761C39B5FDEE8E28F24B5441 /* ContentView.swift in Sources */,
+				7AF67B0ACD3BB2342C53DF7C /* HeadPoseResolver.swift in Sources */,
+				3D7AFC98C6C03705EE9F549B /* PlacementController.swift in Sources */,
+				5EB907A6E751F32B9A070780 /* RendererTaskExecutor.swift in Sources */,
+				B7CB2475FFAD508E395C6888 /* SceneTransforms.swift in Sources */,
+				24F1D91C5DAFC4A61629289E /* SplatLoader.swift in Sources */,
+				4A06D4B5D17890BF99F41A25 /* SplatRequest.swift in Sources */,
+				046F148BF5E52C50E5A4155B /* SplatSceneRenderer.swift in Sources */,
+				F04EAFEC297AB8184E722A38 /* SplatVisionApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		34D24C59C461DE353CB9BF7C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5EDD99C3A413A8A556B01FCC /* SplatVision */;
+			targetProxy = 775AD7FA42C14D55DC588860 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		375BDB5E64032C1A299B0E8F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = SplatVision/Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = io.github.ddwolfer.SplatVision;
+				SDKROOT = xros;
+				TARGETED_DEVICE_FAMILY = 7;
+			};
+			name = Release;
+		};
+		3ED25E19A1D75CFD73B76631 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = SplatVision/Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = io.github.ddwolfer.SplatVision;
+				SDKROOT = xros;
+				TARGETED_DEVICE_FAMILY = 7;
+			};
+			name = Debug;
+		};
+		694A9789179ABFB25EFB0F08 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = io.github.ddwolfer.SplatVisionTests;
+				SDKROOT = xros;
+				TARGETED_DEVICE_FAMILY = 7;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SplatVision.app/SplatVision";
+			};
+			name = Release;
+		};
+		B4B312FF67D379BC87B8FC3A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = xros;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 6.0;
+				XROS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Release;
+		};
+		C7DDC323C368A9FF26098B69 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = io.github.ddwolfer.SplatVisionTests;
+				SDKROOT = xros;
+				TARGETED_DEVICE_FAMILY = 7;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SplatVision.app/SplatVision";
+			};
+			name = Debug;
+		};
+		EACAE6DFFDAC6B07DDDF3C28 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = xros;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
+				XROS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		891532A173FB846B26296ACE /* Build configuration list for PBXProject "SplatVision" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EACAE6DFFDAC6B07DDDF3C28 /* Debug */,
+				B4B312FF67D379BC87B8FC3A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		9389ACDBA9A74B2F1F14EA27 /* Build configuration list for PBXNativeTarget "SplatVision" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3ED25E19A1D75CFD73B76631 /* Debug */,
+				375BDB5E64032C1A299B0E8F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		E5417C451AA5752691091B69 /* Build configuration list for PBXNativeTarget "SplatVisionTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C7DDC323C368A9FF26098B69 /* Debug */,
+				694A9789179ABFB25EFB0F08 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		D175F285D5932D9FCDB75560 /* XCRemoteSwiftPackageReference "MetalSplatter" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/scier/MetalSplatter";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		13C065B6D840477E014D74E8 /* SplatIO */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D175F285D5932D9FCDB75560 /* XCRemoteSwiftPackageReference "MetalSplatter" */;
+			productName = SplatIO;
+		};
+		40809E0C5870BE18C62BF177 /* MetalSplatter */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D175F285D5932D9FCDB75560 /* XCRemoteSwiftPackageReference "MetalSplatter" */;
+			productName = MetalSplatter;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 2FAC3159B2027B986555485A /* Project object */;
+}

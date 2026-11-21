@@ -1,0 +1,90 @@
+# XcodeGen spec — the source of truth for SplatVision.xcodeproj.
+# After adding/removing files or changing settings: `cd vision && xcodegen` and commit both files.
+name: SplatVision
+options:
+  bundleIdPrefix: io.github.ddwolfer
+  deploymentTarget:
+    visionOS: "26.0"
+  createIntermediateGroups: true
+  developmentLanguage: zh-Hant
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+
+packages:
+  MetalSplatter:
+    url: https://github.com/scier/MetalSplatter
+    from: 1.0.1
+
+targets:
+  SplatVision:
+    type: application
+    platform: visionOS
+    sources:
+      - path: SplatVision
+    dependencies:
+      - package: MetalSplatter
+        product: MetalSplatter
+      - package: MetalSplatter
+        product: SplatIO
+    info:
+      path: SplatVision/Resources/Info.plist
+      properties:
+        CFBundleDisplayName: Splat Vision
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        UIApplicationSceneManifest:
+          UIApplicationPreferredDefaultSceneSessionRole: UIWindowSceneSessionRoleApplication
+          UIApplicationSupportsMultipleScenes: true
+          UISceneConfigurations: {}
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: io.github.ddwolfer.SplatVision
+        CODE_SIGN_STYLE: Automatic
+        TARGETED_DEVICE_FAMILY: "7"
+    postCompileScripts:
+      # Builds the mock SHARP-style PLY into the app bundle (.ply files are not committed, see CLAUDE.md §7).
+      - name: Generate mock PLY
+        script: |
+          set -euo pipefail
+          mkdir -p "$(dirname "${SCRIPT_OUTPUT_FILE_0}")"
+          /usr/bin/python3 "${SCRIPT_INPUT_FILE_0}" "${SCRIPT_OUTPUT_FILE_0}"
+        inputFiles:
+          - $(SRCROOT)/tools/make_mock_ply.py
+        outputFiles:
+          - $(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/mock_sharp.ply
+        basedOnDependencyAnalysis: true
+
+  SplatVisionTests:
+    type: bundle.unit-test
+    platform: visionOS
+    sources:
+      - path: SplatVisionTests
+    dependencies:
+      - target: SplatVision
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: io.github.ddwolfer.SplatVisionTests
+
+schemes:
+  SplatVision:
+    build:
+      targets:
+        SplatVision: all
+        SplatVisionTests: [test]
+    run:
+      # Loading large splats in Debug is >10x slower (MetalSplatter README), so Run uses Release.
+      config: Release
+    test:
+      config: Debug
+      gatherCoverageData: false
+      targets:
+        - SplatVisionTests
+    profile:
+      config: Release
+    archive:
+      config: Release

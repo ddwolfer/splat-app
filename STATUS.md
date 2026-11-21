@@ -11,7 +11,8 @@
 
 ## vision（splat-vision）
 
-- [ ] V0 骨架 + mock 顯示
+- [x] V0 骨架 + mock 顯示
+  - Xcode 26.6（visionOS 26.5 SDK）、MetalSplatter 1.0.1；mock 為 SHARP 格式 PLY（建置時產生）；OpenCV→visionOS 座標轉換、以開啟當下頭部位置為原點；模擬器 20 個測試全過（見 `plans/vision-V0.md`）
 - [ ] V1 UI + API client
 - [ ] V2 接上真實 server 並修正座標
 - [ ] V3 照片上傳
