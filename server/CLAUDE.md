@@ -33,12 +33,14 @@ PY=/c/Users/91006/anaconda3/envs/sharp/python.exe
 git clone https://github.com/apple/ml-sharp server/third_party/ml-sharp
 git -C server/third_party/ml-sharp checkout aed6527499ef91cba3b54c18d49a870f25947190
 $PY -m pip install torch==2.8.0 torchvision==0.23.0 --index-url https://download.pytorch.org/whl/cu128
-cd server/third_party/ml-sharp && $PY -m pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu128
+cd server/third_party/ml-sharp && $PY -m pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu128 && cd -
+$PY -m pip install fastapi==0.165.0 uvicorn==0.54.0 httpx==0.28.1 httpcore==1.0.9 python-multipart==0.0.34 pytest==9.2.0
 $PY -c "import torch; print(torch.cuda.is_available())"   # 必須是 True
 ```
 
 ## 檔案
 
+- `app.py`：FastAPI（API.md v1）；`config.py` 設定；`fetch.py` 安全下載（SSRF 防護在連線當下驗證 IP）；`imaging.py` 圖片解碼／轉正／縮圖／焦距；`storage.py` 檔案儲存（`<id>.json` 是完成標記）
 - `sharp_runner.py`：載入模型、推論（官方 `predict_image` 的鏡像版，加上只作用在網路 forward 的 fp16 autocast）。M2 的 API server 重用它。
 - `scripts/bench_sharp.py`：M1 benchmark（計時、VRAM、PLY 檢查）。
   ```bash
@@ -47,7 +49,38 @@ $PY -c "import torch; print(torch.cuda.is_available())"   # 必須是 True
 
 ## 啟動方式
 
-（待 M2 補上）
+```powershell
+# PowerShell（在 repo 根目錄）
+.\server\run_server.ps1          # 只有本機：127.0.0.1:8000
+.\server\run_server.ps1 -Lan     # 區網：0.0.0.0:8000（需要防火牆規則，見 STATUS.md / M3）
+```
+```bash
+# Git Bash
+server/run_server.sh              # 127.0.0.1:8000
+server/run_server.sh --lan        # 0.0.0.0:8000
+```
+
+啟動約 13 秒（載入模型）後才開始 listen。單一 process、不開 reload（GPU 串行化依賴這點）。
+
+設定（環境變數，見 `config.py`）：`SHARP_AMP`（fp16／none）、`MAX_UPLOAD_BYTES`、`MAX_PIXELS`、`MAX_SIDE`、`MAX_INFLIGHT`、`MAX_SPLATS`、`ALLOWED_PRIVATE_NETS`（允許下載的私有網段 CIDR，逗號分隔，預設空）等。
+
+### 測試
+
+```bash
+cd server && PYTHONNOUSERSITE=1 $PY -m pytest tests -q -p no:cacheprovider   # 假模型，不需要 GPU
+```
+
+curl（server 啟動後）：
+```bash
+curl -s http://127.0.0.1:8000/health
+curl -s -X POST http://127.0.0.1:8000/generate -F "file=@server/third_party/ml-sharp/data/teaser.jpg"
+curl -s -X POST http://127.0.0.1:8000/generate -H "Content-Type: application/json" \
+     -d '{"image_url":"https://upload.wikimedia.org/wikipedia/commons/4/47/PNG_transparency_demonstration_1.png"}'
+curl -s -o out.ply http://127.0.0.1:8000/splats/<id>.ply
+curl -s http://127.0.0.1:8000/list
+```
+
+把離線產生的 .ply 交給 server 提供：`$PY server/scripts/register_ply.py <file.ply> --source "sample:..." --amp none`
 
 ## 注意事項
 

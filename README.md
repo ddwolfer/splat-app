@@ -44,7 +44,13 @@ Vision Pro App 下載後用 [MetalSplatter](https://github.com/scier/MetalSplatt
 
 ### Server（Windows）
 
-（待補，見 `server/CLAUDE.md`）
+環境建立見 `server/CLAUDE.md`。啟動（PowerShell，repo 根目錄）：
+
+```powershell
+.\server\run_server.ps1 -Lan
+```
+
+約 13 秒後可用：`curl http://<PC IP>:8000/health`。API 見 `API.md`。
 
 ### Vision App（Mac）
 
