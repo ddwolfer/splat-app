@@ -19,6 +19,7 @@ struct HistorySection: View {
                     open(entry)
                 } label: {
                     HistoryRow(entry: entry,
+                               thumbnailURL: history.thumbnailURL(for: entry),
                                isMissing: history.missingFileIDs.contains(entry.id),
                                isDisplayed: isProtected)
                 }
@@ -95,20 +96,15 @@ struct HistorySection: View {
 
 private struct HistoryRow: View {
     let entry: HistoryEntry
+    let thumbnailURL: URL?
     let isMissing: Bool
     let isDisplayed: Bool
 
     var body: some View {
         HStack(spacing: 14) {
-            AsyncImage(url: URL(string: entry.imageURL)) { phase in
-                if let image = phase.image {
-                    image.resizable().scaledToFill()
-                } else {
-                    Image(systemName: "photo").foregroundStyle(.secondary)
-                }
-            }
-            .frame(width: 72, height: 54)
-            .clipShape(RoundedRectangle(cornerRadius: 8))
+            thumbnail
+                .frame(width: 72, height: 54)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
@@ -136,6 +132,23 @@ private struct HistoryRow: View {
 
     private var title: String { entry.displayTitle }
 
+    @ViewBuilder
+    private var thumbnail: some View {
+        if let thumbnailURL, let image = UIImage(contentsOfFile: thumbnailURL.path) {
+            Image(uiImage: image).resizable().scaledToFill()
+        } else if entry.imageURL.hasPrefix("http") {
+            AsyncImage(url: URL(string: entry.imageURL)) { phase in
+                if let image = phase.image {
+                    image.resizable().scaledToFill()
+                } else {
+                    Image(systemName: "photo").foregroundStyle(.secondary)
+                }
+            }
+        } else {
+            Image(systemName: "photo").foregroundStyle(.secondary)
+        }
+    }
+
     private var detail: String {
         let origin = switch entry.origin {
         case .mock: "Mock"
@@ -150,8 +163,9 @@ private struct HistoryRow: View {
 }
 
 extension HistoryEntry {
-    /// "host / file.jpg" from the source image URL.
+    /// "host / file.jpg" from the source image URL, or "上傳：file.jpg" for uploads.
     var displayTitle: String {
+        if imageURL.hasPrefix("upload:") { return "上傳：" + imageURL.dropFirst("upload:".count) }
         guard let url = URL(string: imageURL) else { return imageURL }
         let name = url.lastPathComponent
         return [url.host(), name.isEmpty || name == "/" ? nil : name].compactMap { $0 }.joined(separator: " / ")

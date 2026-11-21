@@ -21,14 +21,23 @@ struct MockSplatService: SplatService {
                                     + Double(elapsed.components.attoseconds) / 1e18)
     }
 
+    func generate(upload: PreparedUpload,
+                  progress: @escaping @Sendable (TransferProgress) -> Void) async throws -> GenerateResponse {
+        for step in 1...4 {
+            try await Task.sleep(for: .milliseconds(100))
+            progress(TransferProgress(completedBytes: upload.byteCount * Int64(step) / 4, totalBytes: upload.byteCount))
+        }
+        return try await generate(imageURL: URL(string: "https://mock.invalid/\(upload.filename)")!)
+    }
+
     func downloadPLY(plyPath: String,
-                     progress: @escaping @Sendable (DownloadProgress) -> Void) async throws -> URL {
+                     progress: @escaping @Sendable (TransferProgress) -> Void) async throws -> URL {
         let source = try SplatSource.bundledMock.resolveURL()
         let size = (try? FileManager.default.attributesOfItem(atPath: source.path)[.size] as? Int64) ?? 0
         // A few progress steps so the UI path is exercised.
         for step in 1...4 {
             try await Task.sleep(for: .milliseconds(100))
-            progress(DownloadProgress(receivedBytes: size * Int64(step) / 4, totalBytes: size))
+            progress(TransferProgress(completedBytes: size * Int64(step) / 4, totalBytes: size))
         }
         let destination = FileManager.default.temporaryDirectory
             .appendingPathComponent("download-\(UUID().uuidString).ply")

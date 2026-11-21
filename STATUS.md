@@ -19,7 +19,8 @@
   - 網址生成、進度與耗時、歷史（最多 10 筆，存在 App 內）、設定頁（Base URL／Mock 模式）、ATS 區網例外；本機 `vision/tools/mock_server.py` 照 API.md 模擬 server；模擬器 52 個測試全過（含 63MB／118 萬點的區網整合測試）
 - [ ] V2 接上真實 server 並修正座標
   - A 段（不需要 server）完成：SHARP 快速讀檔器（可取消）、效能量測、顯示品質上限；B 段等 M3
-- [ ] V3 照片上傳
+- [x] V3 照片上傳
+  - 系統照片選擇器（不需權限）、原檔直送保留 EXIF 焦距（超過 20 MiB／40 MP 或非 JPEG/PNG/HEIC/WebP 才在本機轉 JPEG，白底、保留 EXIF）、multipart 暫存檔上傳與進度、歷史縮圖；以 mock server 驗證，真實 server 於 M3 後與 V2 一起驗
 - [ ] V4 安裝到實機
 
 ## 整合

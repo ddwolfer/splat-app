@@ -1,9 +1,12 @@
+import PhotosUI
 import SwiftUI
 
 struct GenerateSection: View {
     @Environment(GenerationController.self) private var generation
     @Environment(SettingsStore.self) private var settings
     @State private var urlText = ""
+    @State private var pickerItem: PhotosPickerItem?
+    @State private var showingPicker = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -23,9 +26,24 @@ struct GenerateSection: View {
                 } else {
                     Button("生成", systemImage: "wand.and.stars", action: generate)
                         .disabled(urlText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    Button("從照片選擇", systemImage: "photo.on.rectangle") { showingPicker = true }
                 }
             }
             .buttonStyle(.bordered)
+            // Runs outside the app: no Photos permission needed. `.current` keeps HEIC/EXIF as-is.
+            .photosPicker(isPresented: $showingPicker, selection: $pickerItem, matching: .images,
+                          preferredItemEncoding: .current)
+            .onAppear {
+                // Dev/automation hook: `-showPhotoPicker YES`.
+                if UserDefaults.standard.bool(forKey: "showPhotoPicker") { showingPicker = true }
+            }
+            .onChange(of: pickerItem) { _, item in
+                guard let item else { return }
+                pickerItem = nil
+                generation.startUpload {
+                    try await item.loadTransferable(type: PickedImageFile.self)
+                }
+            }
 
             Text(backendDescription)
                 .font(.caption)
@@ -56,6 +74,26 @@ private struct PhaseView: View {
         switch phase {
         case .idle:
             EmptyView()
+        case let .preparing(startedAt):
+            TimelineView(.periodic(from: startedAt, by: 0.5)) { context in
+                HStack(spacing: 8) {
+                    ProgressView()
+                    Text("準備照片中…（\(Format.seconds(context.date.timeIntervalSince(startedAt)))）")
+                        .monospacedDigit()
+                }
+            }
+        case let .uploading(startedAt, progress):
+            VStack(alignment: .leading, spacing: 6) {
+                if let fraction = progress.fraction {
+                    ProgressView(value: fraction)
+                } else {
+                    ProgressView()
+                }
+                TimelineView(.periodic(from: startedAt, by: 0.5)) { context in
+                    Text(transferText("上傳中", progress, elapsed: context.date.timeIntervalSince(startedAt)))
+                        .monospacedDigit()
+                }
+            }
         case let .generating(startedAt):
             TimelineView(.periodic(from: startedAt, by: 0.1)) { context in
                 HStack(spacing: 8) {
@@ -72,7 +110,7 @@ private struct PhaseView: View {
                     ProgressView()
                 }
                 TimelineView(.periodic(from: startedAt, by: 0.5)) { context in
-                    Text(downloadText(progress, elapsed: context.date.timeIntervalSince(startedAt)))
+                    Text(transferText("下載中", progress, elapsed: context.date.timeIntervalSince(startedAt)))
                         .monospacedDigit()
                 }
             }
@@ -91,12 +129,12 @@ private struct PhaseView: View {
         }
     }
 
-    private func downloadText(_ progress: DownloadProgress, elapsed: TimeInterval) -> String {
-        var text = "下載中 "
+    private func transferText(_ verb: String, _ progress: TransferProgress, elapsed: TimeInterval) -> String {
+        var text = "\(verb) "
         if let fraction = progress.fraction, let total = progress.totalBytes {
-            text += "\(Int(fraction * 100))%（\(Format.bytes(progress.receivedBytes)) / \(Format.bytes(total))）"
+            text += "\(Int(fraction * 100))%（\(Format.bytes(progress.completedBytes)) / \(Format.bytes(total))）"
         } else {
-            text += Format.bytes(progress.receivedBytes)
+            text += Format.bytes(progress.completedBytes)
         }
         return text + "・\(Format.seconds(elapsed))"
     }

@@ -144,6 +144,71 @@ struct HistoryStoreTests {
         #expect(backups.isEmpty)
     }
 
+    private func makeThumbnail() throws -> URL {
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("thumb-\(UUID().uuidString).jpg")
+        try Data(repeating: 9, count: 50).write(to: url)
+        return url
+    }
+
+    @Test func thumbnailIsStoredAndRemovedWithItsEntry() throws {
+        let store = HistoryStore(rootDirectory: root)
+        store.load()
+        let saved = try store.commit(downloadedFile: try makeDownload(), entry: entry("t"), thumbnailFile: try makeThumbnail())
+        let thumbnail = try #require(store.thumbnailURL(for: saved))
+        #expect(FileManager.default.fileExists(atPath: thumbnail.path))
+        #expect(store.totalBytes == saved.fileSize + 50)  // thumbnail counted in the total
+        try store.delete(saved)
+        #expect(!FileManager.default.fileExists(atPath: thumbnail.path))
+    }
+
+    @Test func failedCommitRollsBackTheThumbnailToo() throws {
+        let store = HistoryStore(rootDirectory: root)
+        store.load()
+        struct DiskFull: Error {}
+        store.writeJSON = { _, _ in throw DiskFull() }
+        #expect(throws: DiskFull.self) {
+            try store.commit(downloadedFile: try makeDownload(), entry: entry("t"), thumbnailFile: try makeThumbnail())
+        }
+        let thumbs = (try? FileManager.default.contentsOfDirectory(atPath: store.thumbsDirectory.path)) ?? []
+        #expect(thumbs.isEmpty)
+    }
+
+    @Test func redownloadKeepsTheExistingThumbnail() throws {
+        let store = HistoryStore(rootDirectory: root)
+        store.load()
+        let saved = try store.commit(downloadedFile: try makeDownload(), entry: entry("t"), thumbnailFile: try makeThumbnail())
+        try FileManager.default.removeItem(at: store.fileURL(for: saved))
+        let again = try store.commit(downloadedFile: try makeDownload(), entry: saved)
+        #expect(again.thumbnailFile == saved.thumbnailFile)
+        #expect(FileManager.default.fileExists(atPath: try #require(store.thumbnailURL(for: again)).path))
+    }
+
+    @Test func unindexedThumbnailsAreCountedAndCleared() throws {
+        let store = HistoryStore(rootDirectory: root)
+        store.load()
+        try Data([1, 2]).write(to: store.thumbsDirectory.appendingPathComponent("stray.jpg"))
+        store.load()
+        #expect(store.unindexedFileCount == 1)
+        try store.deleteAll()
+        #expect(store.unindexedFileCount == 0)
+        let thumbs = (try? FileManager.default.contentsOfDirectory(atPath: store.thumbsDirectory.path)) ?? []
+        #expect(thumbs.isEmpty)
+    }
+
+    @Test func oldEntriesWithoutThumbnailFieldStillDecode() throws {
+        try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+        let json = """
+        [{"id":"old","imageURL":"https://example.com/a.jpg","createdAt":"2026-11-21T04:00:00Z","serverSeconds":9,
+          "totalSeconds":12,"fileSize":5,"origin":{"mock":{}}}]
+        """
+        try Data(json.utf8).write(to: root.appendingPathComponent("history.json"))
+        let store = HistoryStore(rootDirectory: root)
+        store.load()
+        #expect(store.loadError == nil)
+        #expect(store.entries.first?.thumbnailFile == nil)
+        #expect(store.entries.first?.id == "old")
+    }
+
     @Test(arguments: ["../evil", "a/b", "", "名字"])
     func unsafeIDsAreRejected(id: String) throws {
         let store = HistoryStore(rootDirectory: root)

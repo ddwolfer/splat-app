@@ -1,7 +1,7 @@
 import Foundation
 import Observation
 
-/// Runs "image URL → POST /generate → download PLY → save to history → show".
+/// Runs "image URL or picked photo → POST /generate → download PLY → save to history → show".
 ///
 /// Each run has its own generation id; every side effect (progress, history commit, auto-show) first
 /// checks that the id is still current, so a cancelled run can never leak into the next one.
@@ -17,15 +17,18 @@ final class GenerationController {
 
     enum Phase: Equatable {
         case idle
+        /// Getting the picked photo from Photos/iCloud and checking/converting it.
+        case preparing(startedAt: Date)
+        case uploading(startedAt: Date, progress: TransferProgress)
         case generating(startedAt: Date)
-        case downloading(startedAt: Date, progress: DownloadProgress)
+        case downloading(startedAt: Date, progress: TransferProgress)
         case finished(Summary)
         case failed(message: String)
         case cancelled
 
         var isRunning: Bool {
             switch self {
-            case .generating, .downloading: true
+            case .preparing, .uploading, .generating, .downloading: true
             default: false
             }
         }
@@ -50,13 +53,20 @@ final class GenerationController {
     enum InputError: LocalizedError {
         case invalidImageURL
         case noServerConfigured
+        case noImageData
 
         var errorDescription: String? {
             switch self {
             case .invalidImageURL: "請輸入 http:// 或 https:// 開頭的圖片網址"
             case .noServerConfigured: "尚未設定 server：請到設定輸入 Base URL，或開啟 Mock 模式"
+            case .noImageData: "無法從照片取得這張圖片（若在 iCloud，請確認網路後再試）"
             }
         }
+    }
+
+    private enum Input {
+        case url(URL)
+        case upload(PreparedUpload)
     }
 
     static func validateImageURL(_ text: String) -> URL? {
@@ -85,7 +95,23 @@ final class GenerationController {
         let start = Date()
         // Set synchronously so the UI (and a second tap) sees "running" immediately.
         phase = .generating(startedAt: start)
-        task = Task { await run(id: id, service: service, config: config, imageURL: imageURL, start: start) }
+        task = Task { await run(id: id, service: service, config: config, input: .url(imageURL), start: start) }
+    }
+
+    /// Starts a generation from a picked photo. `loader` fetches it (from Photos/iCloud) to a temporary
+    /// file; the generation id covers that step too, so a slow, superseded pick can never be uploaded.
+    func startUpload(loader: @escaping @Sendable () async throws -> PickedImageFile?) {
+        guard !phase.isRunning else { return }
+        guard let config = settings.currentConfig() else {
+            phase = .failed(message: InputError.noServerConfigured.localizedDescription)
+            return
+        }
+        let id = UUID()
+        currentID = id
+        let service = makeService(config)
+        let start = Date()
+        phase = .preparing(startedAt: start)
+        task = Task { await runUpload(id: id, service: service, config: config, loader: loader, start: start) }
     }
 
     func cancel() {
@@ -113,15 +139,60 @@ final class GenerationController {
         currentID = id
         let service = makeService(config)
         let start = Date()
-        phase = .downloading(startedAt: start, progress: DownloadProgress(receivedBytes: 0, totalBytes: nil))
+        phase = .downloading(startedAt: start, progress: TransferProgress(completedBytes: 0, totalBytes: nil))
         task = Task { await runDownload(id: id, service: service, entry: entry, plyPath: plyPath, start: start) }
     }
 
     // MARK: - Runs
 
-    private func run(id: UUID, service: any SplatService, config: ServiceConfig, imageURL: URL, start: Date) async {
+    private func runUpload(id: UUID, service: any SplatService, config: ServiceConfig,
+                           loader: @escaping @Sendable () async throws -> PickedImageFile?, start: Date) async {
+        var temporaryFiles: [URL] = []
+        defer { temporaryFiles.forEach(Self.removeIfPresent) }
         do {
-            let generated = try await service.generate(imageURL: imageURL)
+            guard let picked = try await loader() else { throw InputError.noImageData }
+            temporaryFiles.append(picked.url)
+            guard isCurrent(id) else { return }
+            let prepared = try await Self.prepareInBackground(picked)
+            temporaryFiles.append(prepared.fileURL)
+            if let thumbnail = prepared.thumbnailURL { temporaryFiles.append(thumbnail) }
+            guard isCurrent(id) else { return }
+            await run(id: id, service: service, config: config, input: .upload(prepared), start: start)
+        } catch {
+            finish(id: id, error: error)
+        }
+    }
+
+    /// Image checks/conversion are CPU and I/O heavy: never on the main actor.
+    @concurrent
+    private static func prepareInBackground(_ picked: PickedImageFile) async throws -> PreparedUpload {
+        try UploadImagePreparer.prepare(file: picked.url, suggestedName: picked.originalName)
+    }
+
+    private func run(id: UUID, service: any SplatService, config: ServiceConfig, input: Input, start: Date) async {
+        do {
+            let generated: GenerateResponse
+            let sourceDescription: String
+            var thumbnail: URL?
+            switch input {
+            case let .url(imageURL):
+                generated = try await service.generate(imageURL: imageURL)
+                sourceDescription = imageURL.absoluteString
+            case let .upload(prepared):
+                phase = .uploading(startedAt: Date(), progress: TransferProgress(completedBytes: 0, totalBytes: prepared.byteCount))
+                generated = try await service.generate(upload: prepared) { [weak self] progress in
+                    Task { @MainActor in
+                        guard let self, self.isCurrent(id), case let .uploading(uploadStart, _) = self.phase else { return }
+                        if let total = progress.totalBytes, progress.completedBytes >= total {
+                            self.phase = .generating(startedAt: Date())  // all bytes sent: now waiting for the server
+                        } else {
+                            self.phase = .uploading(startedAt: uploadStart, progress: progress)
+                        }
+                    }
+                }
+                sourceDescription = "upload:\(prepared.filename)"
+                thumbnail = prepared.thumbnailURL
+            }
             guard isCurrent(id) else { return }
 
             let downloadStart = Date()
@@ -136,13 +207,13 @@ final class GenerationController {
             case let .server(baseURL): .server(baseURL: baseURL, plyPath: generated.plyURL)
             }
             let entry = HistoryEntry(id: generated.id,
-                                     imageURL: imageURL.absoluteString,
+                                     imageURL: sourceDescription,
                                      createdAt: start,
                                      serverSeconds: generated.seconds,
                                      totalSeconds: Date().timeIntervalSince(start),
                                      fileSize: 0,
                                      origin: origin)
-            let saved = try history.commit(downloadedFile: file, entry: entry,
+            let saved = try history.commit(downloadedFile: file, entry: entry, thumbnailFile: thumbnail,
                                            protectedFiles: immersive.protectedFiles)
             phase = .finished(Summary(serverSeconds: saved.serverSeconds,
                                       downloadSeconds: downloadSeconds,
@@ -173,7 +244,7 @@ final class GenerationController {
     }
 
     private func download(id: UUID, service: any SplatService, plyPath: String, startedAt: Date) async throws -> URL {
-        phase = .downloading(startedAt: startedAt, progress: DownloadProgress(receivedBytes: 0, totalBytes: nil))
+        phase = .downloading(startedAt: startedAt, progress: TransferProgress(completedBytes: 0, totalBytes: nil))
         return try await service.downloadPLY(plyPath: plyPath) { [weak self] progress in
             Task { @MainActor in
                 guard let self, self.isCurrent(id), case .downloading = self.phase else { return }

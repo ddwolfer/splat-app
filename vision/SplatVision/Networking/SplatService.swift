@@ -21,14 +21,14 @@ struct GenerateResponse: Codable, Equatable, Sendable {
     }
 }
 
-struct DownloadProgress: Equatable, Sendable {
-    var receivedBytes: Int64
+struct TransferProgress: Equatable, Sendable {
+    var completedBytes: Int64
     /// nil when the server did not send a Content-Length.
     var totalBytes: Int64?
 
     var fraction: Double? {
         guard let totalBytes, totalBytes > 0 else { return nil }
-        return min(1, Double(receivedBytes) / Double(totalBytes))
+        return min(1, Double(completedBytes) / Double(totalBytes))
     }
 }
 
@@ -36,10 +36,13 @@ struct DownloadProgress: Equatable, Sendable {
 protocol SplatService: Sendable {
     func health() async throws -> HealthResponse
     func generate(imageURL: URL) async throws -> GenerateResponse
+    /// multipart upload (API.md: field `file`). `progress` reports bytes sent.
+    func generate(upload: PreparedUpload,
+                  progress: @escaping @Sendable (TransferProgress) -> Void) async throws -> GenerateResponse
     /// Downloads `plyPath` (a `ply_url` from `generate`) to a new temporary file and returns its URL.
     /// The caller owns (moves or deletes) the returned file.
     func downloadPLY(plyPath: String,
-                     progress: @escaping @Sendable (DownloadProgress) -> Void) async throws -> URL
+                     progress: @escaping @Sendable (TransferProgress) -> Void) async throws -> URL
 }
 
 enum SplatServiceError: LocalizedError, Equatable {

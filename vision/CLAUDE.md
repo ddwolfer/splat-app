@@ -31,10 +31,13 @@
   ```
   python3 vision/tools/mock_server.py --host <Mac 區網 IP> --port 8765 [--count 1179648]   # --count：產生跟 SHARP 一樣大的 63 MB 檔
   ```
-  App 的設定填 `http://<Mac 區網 IP>:8765`。`image_url` 含 `error`／`busy`／`slow` 會回 400／503／延遲 10 秒。
+  App 的設定填 `http://<Mac 區網 IP>:8765`。`image_url` 含 `error`／`busy`／`slow` 會回 400／503／延遲 10 秒；
+  multipart 上傳只收 JPEG／PNG／HEIC／WebP（看檔頭），上限 20 MiB（同真實 server）。
+- 模擬器相簿加照片：`xcrun simctl addmedia booted <圖片>`。
   整合測試：`TEST_RUNNER_SPLAT_MOCK_SERVER=http://<Mac 區網 IP>:8765 xcodebuild test ...`（沒設就跳過）。
   用區網 IP 而不是 127.0.0.1，才會測到 ATS 的區網例外。
-- 其他啟動參數：`-autoGenerateURL <圖片網址>` 自動生成、`-showSettings YES` 開設定頁、
+- 其他啟動參數：`-autoGenerateURL <圖片網址>` 自動生成、`-autoUploadPath <Mac 上的圖片路徑>` 走照片上傳流程、
+  `-showPhotoPicker YES` 開照片選擇器、`-showSettings YES` 開設定頁、`-splatBudget 300000` 顯示品質上限、
   `-serverBaseURL <url> -useMockService NO` 暫時指定 server（不寫入設定）。
 - App 的 Mock 模式（設定頁開關，預設開到第一次儲存 Base URL 為止）：不連網路，回傳內建範例。
 

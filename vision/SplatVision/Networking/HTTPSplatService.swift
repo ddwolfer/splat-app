@@ -32,14 +32,51 @@ struct HTTPSplatService: SplatService {
         return try await send(request, as: GenerateResponse.self)
     }
 
+    func generate(upload: PreparedUpload,
+                  progress: @escaping @Sendable (TransferProgress) -> Void) async throws -> GenerateResponse {
+        let body = try Multipart.writeBody(fileURL: upload.fileURL, filename: upload.filename, mimeType: upload.mimeType)
+        defer { try? FileManager.default.removeItem(at: body.fileURL) }
+        var request = URLRequest(url: try endpoint("/generate"))
+        request.httpMethod = "POST"
+        request.setValue(body.contentType, forHTTPHeaderField: "Content-Type")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        request.setValue(String(body.length), forHTTPHeaderField: "Content-Length")
+        request.timeoutInterval = Self.generateTimeout
+
+        let box = TaskBox()
+        let (data, response): (Data, URLResponse) = try await withTaskCancellationHandler {
+            try await withCheckedThrowingContinuation { continuation in
+                let task = session.uploadTask(with: request, fromFile: body.fileURL) { data, response, error in
+                    box.invalidateObservation()
+                    if let error {
+                        continuation.resume(throwing: SplatServiceError.map(error))
+                    } else if let response {
+                        continuation.resume(returning: (data ?? Data(), response))
+                    } else {
+                        continuation.resume(throwing: SplatServiceError.invalidResponse("上傳沒有回應"))
+                    }
+                }
+                let observation = task.observe(\.countOfBytesSent, options: [.new]) { task, _ in
+                    let expected = task.countOfBytesExpectedToSend
+                    progress(TransferProgress(completedBytes: task.countOfBytesSent,
+                                              totalBytes: expected > 0 ? expected : body.length))
+                }
+                box.start(task, observation: observation)
+            }
+        } onCancel: {
+            box.cancel()
+        }
+        return try decodeResponse(data: data, response: response, as: GenerateResponse.self)
+    }
+
     func downloadPLY(plyPath: String,
-                     progress: @escaping @Sendable (DownloadProgress) -> Void) async throws -> URL {
+                     progress: @escaping @Sendable (TransferProgress) -> Void) async throws -> URL {
         var request = URLRequest(url: try endpoint(plyPath))
         request.timeoutInterval = Self.downloadIdleTimeout
         let destination = FileManager.default.temporaryDirectory
             .appendingPathComponent("download-\(UUID().uuidString).ply")
 
-        let box = DownloadTaskBox()
+        let box = TaskBox()
         return try await withTaskCancellationHandler {
             try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<URL, any Error>) in
                 let task = session.downloadTask(with: request) { location, response, error in
@@ -65,7 +102,13 @@ struct HTTPSplatService: SplatService {
                         continuation.resume(throwing: error)
                     }
                 }
-                box.start(task, progress: progress)
+                // URLSessionTask's byte counters are KVO-observable (task.progress units are not always bytes).
+                let observation = task.observe(\.countOfBytesReceived, options: [.new]) { task, _ in
+                    let expected = task.countOfBytesExpectedToReceive
+                    progress(TransferProgress(completedBytes: task.countOfBytesReceived,
+                                              totalBytes: expected > 0 ? expected : nil))
+                }
+                box.start(task, observation: observation)
             }
         } onCancel: {
             box.cancel()
@@ -95,6 +138,10 @@ struct HTTPSplatService: SplatService {
         } catch {
             throw SplatServiceError.map(error)
         }
+        return try decodeResponse(data: data, response: response, as: type)
+    }
+
+    private func decodeResponse<T: Decodable>(data: Data, response: URLResponse, as type: T.Type) throws -> T {
         guard let http = response as? HTTPURLResponse else {
             throw SplatServiceError.invalidResponse("不是 HTTP 回應")
         }
@@ -117,20 +164,14 @@ struct HTTPSplatService: SplatService {
     }
 }
 
-/// Holds the download task so cancellation and progress observation can reach it from any thread.
-private final class DownloadTaskBox: @unchecked Sendable {
+/// Holds a URLSession task so cancellation and progress observation can reach it from any thread.
+private final class TaskBox: @unchecked Sendable {
     private let lock = NSLock()
-    private var task: URLSessionDownloadTask?
+    private var task: URLSessionTask?
     private var observation: NSKeyValueObservation?
     private var cancelled = false
 
-    func start(_ task: URLSessionDownloadTask, progress: @escaping @Sendable (DownloadProgress) -> Void) {
-        // URLSessionTask's byte counters are KVO-observable (task.progress units are not always bytes).
-        let observation = task.observe(\.countOfBytesReceived, options: [.new]) { task, _ in
-            let expected = task.countOfBytesExpectedToReceive
-            progress(DownloadProgress(receivedBytes: task.countOfBytesReceived,
-                                      totalBytes: expected > 0 ? expected : nil))
-        }
+    func start(_ task: URLSessionTask, observation: NSKeyValueObservation) {
         let shouldCancel = lock.withLock {
             self.task = task
             self.observation = observation

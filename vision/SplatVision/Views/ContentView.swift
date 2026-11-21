@@ -53,6 +53,16 @@ struct ContentView: View {
         if defaults.bool(forKey: "showSettings") {
             showingSettings = true
         }
+        // `-autoUploadPath <image file>`: runs the photo-upload path with that file (as if picked).
+        if let path = defaults.string(forKey: "autoUploadPath"), !path.isEmpty {
+            generation.startUpload {
+                let source = URL(fileURLWithPath: path)
+                let copy = FileManager.default.temporaryDirectory
+                    .appendingPathComponent("\(UUID().uuidString).\(source.pathExtension)")
+                try FileManager.default.copyItem(at: source, to: copy)
+                return PickedImageFile(url: copy, originalName: source.deletingPathExtension().lastPathComponent)
+            }
+        }
     }
 }
 

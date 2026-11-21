@@ -82,13 +82,13 @@ struct HTTPSplatServiceTests {
             return StubURLProtocol.Reply(status: 200, headers: ["Content-Type": "application/octet-stream"],
                                          chunks: [first, second])
         }
-        let seen = Mutex<[DownloadProgress]>([])
+        let seen = Mutex<[TransferProgress]>([])
         let file = try await api.downloadPLY(plyPath: "/splats/abc.ply") { progress in
             seen.withLock { $0.append(progress) }
         }
         defer { try? FileManager.default.removeItem(at: file) }
         #expect(try Data(contentsOf: file) == first + second)
-        let maxReceived = seen.withLock { $0.map(\.receivedBytes).max() ?? 0 }
+        let maxReceived = seen.withLock { $0.map(\.completedBytes).max() ?? 0 }
         #expect(maxReceived == Int64(first.count + second.count))
     }
 

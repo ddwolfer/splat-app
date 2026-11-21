@@ -6,13 +6,17 @@ Stdlib only. Dev use on your own machine; it is NOT the real server and does not
   python3 vision/tools/mock_server.py                 # 0.0.0.0:8765, small mock PLY (~1 MB)
   python3 vision/tools/mock_server.py --count 1179648 # full-size PLY (~63 MB, like real SHARP output)
 
-Endpoints (see API.md): GET /health, POST /generate (JSON {"image_url"}), GET /splats/<id>.ply, GET /list.
+Endpoints (see API.md): GET /health, POST /generate (JSON {"image_url"} or multipart field "file"),
+GET /splats/<id>.ply, GET /list.
 Test hooks: an image_url containing "error" -> 400, "busy" -> 503, "slow" -> 10 s delay.
+Uploads: must be JPEG/PNG/HEIC/WebP by magic bytes (else 400), <= 20 MB (else 413).
 Binds 0.0.0.0 so the visionOS simulator can reach it via the Mac's LAN IP (exercises ATS local networking).
 """
 
 import argparse
 import datetime
+import email.parser
+import email.policy
 import json
 import os
 import re
@@ -28,6 +32,32 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import make_mock_ply  # noqa: E402  (sibling script in this directory)
 
 SPLAT_PATH = re.compile(r"^/splats/([0-9a-f-]{36})\.ply$")
+MAX_UPLOAD = 20 * 1024 * 1024  # same as server/config.py max_upload_bytes
+
+
+def image_kind(data):
+    """Rough magic-byte check for the formats the real server accepts."""
+    if data.startswith(b"\xff\xd8\xff"):
+        return "jpeg"
+    if data.startswith(b"\x89PNG\r\n\x1a\n"):
+        return "png"
+    if data[4:8] == b"ftyp" and data[8:12] in (b"heic", b"heix", b"mif1", b"msf1", b"hevc"):
+        return "heic"
+    if data.startswith(b"RIFF") and data[8:12] == b"WEBP":
+        return "webp"
+    return None
+
+
+def parse_multipart_file(content_type, body):
+    """Returns (filename, bytes) of the form field "file", or None."""
+    message = email.parser.BytesParser(policy=email.policy.default).parsebytes(
+        b"Content-Type: " + content_type.encode() + b"\r\nMIME-Version: 1.0\r\n\r\n" + body)
+    if not message.is_multipart():
+        return None
+    for part in message.iter_parts():
+        if part.get_param("name", header="content-disposition") == "file":
+            return part.get_filename() or "upload", part.get_payload(decode=True) or b""
+    return None
 
 
 class State:
@@ -83,19 +113,38 @@ class Handler(BaseHTTPRequestHandler):
         if self.path != "/generate":
             self.send_error_json(HTTPStatus.NOT_FOUND, "not found")
             return
-        if not self.headers.get("Content-Type", "").startswith("application/json"):
-            self.send_error_json(HTTPStatus.UNSUPPORTED_MEDIA_TYPE, "expected application/json")
-            return
+        content_type = self.headers.get("Content-Type", "")
         length = int(self.headers.get("Content-Length") or 0)
-        if length > 4096:
-            self.send_error_json(HTTPStatus.REQUEST_ENTITY_TOO_LARGE, "body too large")
-            return
-        try:
-            body = json.loads(self.rfile.read(length) or b"{}")
-            image_url = body["image_url"]
-            assert isinstance(image_url, str) and image_url.startswith(("http://", "https://"))
-        except Exception:
-            self.send_error_json(HTTPStatus.BAD_REQUEST, "invalid JSON or image_url")
+        if content_type.startswith("multipart/form-data"):
+            if length > MAX_UPLOAD + 64 * 1024:
+                self.send_error_json(HTTPStatus.REQUEST_ENTITY_TOO_LARGE, "image too large")
+                return
+            parsed = parse_multipart_file(content_type, self.rfile.read(length))
+            if parsed is None:
+                self.send_error_json(HTTPStatus.BAD_REQUEST, "missing file field")
+                return
+            filename, data = parsed
+            if len(data) > MAX_UPLOAD:
+                self.send_error_json(HTTPStatus.REQUEST_ENTITY_TOO_LARGE, "image too large")
+                return
+            if image_kind(data) is None:
+                self.send_error_json(HTTPStatus.BAD_REQUEST, "not an image (mock: JPEG/PNG/HEIC/WebP only)")
+                return
+            self.log_message("upload %s: %d bytes (%s)", filename, len(data), image_kind(data))
+            image_url = "upload:" + filename
+        elif content_type.startswith("application/json"):
+            if length > 4096:
+                self.send_error_json(HTTPStatus.REQUEST_ENTITY_TOO_LARGE, "body too large")
+                return
+            try:
+                body = json.loads(self.rfile.read(length) or b"{}")
+                image_url = body["image_url"]
+                assert isinstance(image_url, str) and image_url.startswith(("http://", "https://"))
+            except Exception:
+                self.send_error_json(HTTPStatus.BAD_REQUEST, "invalid JSON or image_url")
+                return
+        else:
+            self.send_error_json(HTTPStatus.UNSUPPORTED_MEDIA_TYPE, "expected application/json or multipart/form-data")
             return
         if "error" in image_url:
             self.send_error_json(HTTPStatus.BAD_REQUEST, "not an image (mock)")

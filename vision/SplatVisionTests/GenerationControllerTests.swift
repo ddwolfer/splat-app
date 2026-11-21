@@ -20,10 +20,15 @@ private struct FakeService: SplatService {
         return GenerateResponse(id: id, plyURL: "/splats/\(id).ply", seconds: 1)
     }
 
-    func downloadPLY(plyPath: String, progress: @escaping @Sendable (DownloadProgress) -> Void) async throws -> URL {
+    func generate(upload: PreparedUpload, progress: @escaping @Sendable (TransferProgress) -> Void) async throws -> GenerateResponse {
+        progress(TransferProgress(completedBytes: upload.byteCount, totalBytes: upload.byteCount))
+        return GenerateResponse(id: "uploaded", plyURL: "/splats/uploaded.ply", seconds: 1)
+    }
+
+    func downloadPLY(plyPath: String, progress: @escaping @Sendable (TransferProgress) -> Void) async throws -> URL {
         let url = FileManager.default.temporaryDirectory.appendingPathComponent("fake-\(UUID().uuidString).ply")
         try Data(repeating: 1, count: 100).write(to: url)
-        progress(DownloadProgress(receivedBytes: 100, totalBytes: 100))
+        progress(TransferProgress(completedBytes: 100, totalBytes: 100))
         return url
     }
 }
@@ -94,6 +99,50 @@ struct GenerationControllerTests {
         #expect(!FileManager.default.fileExists(atPath: file.path))
     }
 
+    @Test func uploadIsSavedWithThumbnail() async throws {
+        let (controller, history) = makeController()
+        let image = try TestImage.write(type: .jpeg, width: 64, height: 48)
+        controller.startUpload { PickedImageFile(url: image, originalName: "IMG_0001") }
+        #expect(controller.phase.isRunning)
+        await waitUntilIdle(controller)
+        guard case .finished = controller.phase else {
+            Issue.record("expected finished, got \(controller.phase)")
+            return
+        }
+        let entry = try #require(history.entries.first)
+        #expect(entry.id == "uploaded")
+        #expect(entry.imageURL == "upload:IMG_0001.jpeg")  // UTType.jpeg.preferredFilenameExtension
+        let thumbnail = try #require(history.thumbnailURL(for: entry))
+        #expect(FileManager.default.fileExists(atPath: thumbnail.path))
+        #expect(!FileManager.default.fileExists(atPath: image.path))  // picked temp copy cleaned up
+    }
+
+    @Test func supersededPickIsNeverUploaded() async throws {
+        let (controller, history) = makeController()
+        let image = try TestImage.write(type: .jpeg, width: 64, height: 48)
+        // A slow pick (e.g. from iCloud) that the user cancels before it arrives.
+        controller.startUpload {
+            try? await Task.sleep(for: .milliseconds(300))
+            return PickedImageFile(url: image, originalName: "slow")
+        }
+        try await Task.sleep(for: .milliseconds(50))
+        controller.cancel()
+        try await Task.sleep(for: .milliseconds(500))
+        #expect(history.entries.isEmpty)
+        #expect(controller.phase == .cancelled)
+    }
+
+    @Test func missingPickedDataIsReported() async {
+        let (controller, _) = makeController()
+        controller.startUpload { nil }
+        await waitUntilIdle(controller)
+        guard case let .failed(message) = controller.phase else {
+            Issue.record("expected failed, got \(controller.phase)")
+            return
+        }
+        #expect(message.contains("無法從照片取得"))
+    }
+
     @Test(arguments: ["", "not a url", "ftp://example.com/a.jpg", "file:///etc/passwd"])
     func invalidImageURLsAreRejected(text: String) {
         let (controller, _) = makeController()
@@ -119,7 +168,11 @@ private struct BadIDService: SplatService {
         GenerateResponse(id: "../escape", plyURL: "/splats/x.ply", seconds: 1)
     }
 
-    func downloadPLY(plyPath: String, progress: @escaping @Sendable (DownloadProgress) -> Void) async throws -> URL {
+    func generate(upload: PreparedUpload, progress: @escaping @Sendable (TransferProgress) -> Void) async throws -> GenerateResponse {
+        try await generate(imageURL: URL(string: "https://x.invalid")!)
+    }
+
+    func downloadPLY(plyPath: String, progress: @escaping @Sendable (TransferProgress) -> Void) async throws -> URL {
         let url = FileManager.default.temporaryDirectory.appendingPathComponent("bad-\(UUID().uuidString).ply")
         try Data(repeating: 1, count: 100).write(to: url)
         recorder.url = url

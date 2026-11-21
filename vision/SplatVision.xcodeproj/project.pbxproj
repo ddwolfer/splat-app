@@ -34,11 +34,14 @@
 		7C278246B9DB8EC456C8EAC6 /* ContentStageConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B7CDC60F5BD3E9938487091 /* ContentStageConfiguration.swift */; };
 		8C972A656951C58E51357B5F /* SplatService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8FDAD5F9DCE232377FA7B6 /* SplatService.swift */; };
 		95D89EBEA1572511F13D5155 /* GenerationControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 290652F0A47E5C0E30ACBB3A /* GenerationControllerTests.swift */; };
+		9A38F1DCABD56E45A2E831D8 /* UploadImagePreparer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B47F97BAB6B9E8342E1C1FE2 /* UploadImagePreparer.swift */; };
 		9BA90BBF494A142759412312 /* SharpPLYLoaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12A8C9B7132B33E56638C3E2 /* SharpPLYLoaderTests.swift */; };
 		AB92C76A033A784D3CD06DC6 /* TestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20D78D6AF04A2885E5CD246B /* TestHelpers.swift */; };
 		B7CB2475FFAD508E395C6888 /* SceneTransforms.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E01A29F4509BEA7895D23DA /* SceneTransforms.swift */; };
 		C13F7956E7A6EBF26CF56CB2 /* RenderMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8F466C87D54BB2CDBBB21C /* RenderMetrics.swift */; };
+		D40CAC72BBA6B84668F6DA3D /* Multipart.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF2B461CDB19BCFE0262959E /* Multipart.swift */; };
 		D74996115B738D807C17B71F /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA24DC0AD289BE018F3B71E4 /* SettingsView.swift */; };
+		DA18308DC3F1067988E445BA /* UploadTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FAFE50BAC6160EA93A5AF61 /* UploadTests.swift */; };
 		EC45C87CB78451D3DC890D88 /* MetalSplatter in Frameworks */ = {isa = PBXBuildFile; productRef = 40809E0C5870BE18C62BF177 /* MetalSplatter */; };
 		F04EAFEC297AB8184E722A38 /* SplatVisionApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C77F3E7E31E15E813224C50 /* SplatVisionApp.swift */; };
 		F155ED7766CB0AD356ACA8F5 /* ImmersiveControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FBF05A9C2971CA0142D9144 /* ImmersiveControllerTests.swift */; };
@@ -70,6 +73,7 @@
 		290652F0A47E5C0E30ACBB3A /* GenerationControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenerationControllerTests.swift; sourceTree = "<group>"; };
 		314DF6A1F8A0FC35C48F984E /* RendererTaskExecutor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RendererTaskExecutor.swift; sourceTree = "<group>"; };
 		38B7DAC555DD65D85C5FF433 /* MockPLYTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPLYTests.swift; sourceTree = "<group>"; };
+		3FAFE50BAC6160EA93A5AF61 /* UploadTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadTests.swift; sourceTree = "<group>"; };
 		45AD1A879E69C591D9071871 /* HeadPoseResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadPoseResolver.swift; sourceTree = "<group>"; };
 		4C03153FB4057F390AB0C692 /* GenerationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenerationController.swift; sourceTree = "<group>"; };
 		4E01A29F4509BEA7895D23DA /* SceneTransforms.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneTransforms.swift; sourceTree = "<group>"; };
@@ -86,6 +90,7 @@
 		A727540068DE4F6B63FAACFA /* SplatRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplatRequest.swift; sourceTree = "<group>"; };
 		B03470B2004968E88F8866E4 /* ServerSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerSettings.swift; sourceTree = "<group>"; };
 		B296A9AE6709A41A2A82C3D2 /* HTTPSplatService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPSplatService.swift; sourceTree = "<group>"; };
+		B47F97BAB6B9E8342E1C1FE2 /* UploadImagePreparer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadImagePreparer.swift; sourceTree = "<group>"; };
 		B81DB372E87AE30EC0DCE968 /* StubURLProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StubURLProtocol.swift; sourceTree = "<group>"; };
 		B99F2C956966A9C9C09D4767 /* HeadPoseResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadPoseResolverTests.swift; sourceTree = "<group>"; };
 		BA24DC0AD289BE018F3B71E4 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -97,6 +102,7 @@
 		DC24ECA823BFA50449450367 /* HistoryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryStore.swift; sourceTree = "<group>"; };
 		DCEBDB1C8AB85D22841E9145 /* SharpPLYLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharpPLYLoader.swift; sourceTree = "<group>"; };
 		DF6BE5A34DD72D9D83FF7D04 /* GenerateSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenerateSection.swift; sourceTree = "<group>"; };
+		EF2B461CDB19BCFE0262959E /* Multipart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Multipart.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -121,6 +127,15 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		3151885FCD132281E5348219 /* Upload */ = {
+			isa = PBXGroup;
+			children = (
+				EF2B461CDB19BCFE0262959E /* Multipart.swift */,
+				B47F97BAB6B9E8342E1C1FE2 /* UploadImagePreparer.swift */,
+			);
+			path = Upload;
+			sourceTree = "<group>";
+		};
 		34AA95811EF1BCD436DB73D2 /* SplatVisionTests */ = {
 			isa = PBXGroup;
 			children = (
@@ -136,6 +151,7 @@
 				12A8C9B7132B33E56638C3E2 /* SharpPLYLoaderTests.swift */,
 				B81DB372E87AE30EC0DCE968 /* StubURLProtocol.swift */,
 				20D78D6AF04A2885E5CD246B /* TestHelpers.swift */,
+				3FAFE50BAC6160EA93A5AF61 /* UploadTests.swift */,
 			);
 			path = SplatVisionTests;
 			sourceTree = "<group>";
@@ -148,6 +164,7 @@
 				B836F6B5CA9EDA6967C4C3F1 /* Networking */,
 				70D0B8E989FBB12103AEBC5B /* Rendering */,
 				BB999EE50DD8FF634968E1DB /* Resources */,
+				3151885FCD132281E5348219 /* Upload */,
 				6F20718276945B542C4A52C7 /* Views */,
 			);
 			path = SplatVision;
@@ -348,6 +365,7 @@
 				9BA90BBF494A142759412312 /* SharpPLYLoaderTests.swift in Sources */,
 				62CD8981FAEDA07DC8854F8F /* StubURLProtocol.swift in Sources */,
 				AB92C76A033A784D3CD06DC6 /* TestHelpers.swift in Sources */,
+				DA18308DC3F1067988E445BA /* UploadTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -366,6 +384,7 @@
 				1C9FBC8B67A85BBC4EC91A8A /* ImmersiveController.swift in Sources */,
 				6B69E104661AC2928170BB85 /* ImmersiveSection.swift in Sources */,
 				6119B8A3F568E4EDD57CADE8 /* MockSplatService.swift in Sources */,
+				D40CAC72BBA6B84668F6DA3D /* Multipart.swift in Sources */,
 				3D7AFC98C6C03705EE9F549B /* PlacementController.swift in Sources */,
 				C13F7956E7A6EBF26CF56CB2 /* RenderMetrics.swift in Sources */,
 				5EB907A6E751F32B9A070780 /* RendererTaskExecutor.swift in Sources */,
@@ -379,6 +398,7 @@
 				046F148BF5E52C50E5A4155B /* SplatSceneRenderer.swift in Sources */,
 				8C972A656951C58E51357B5F /* SplatService.swift in Sources */,
 				F04EAFEC297AB8184E722A38 /* SplatVisionApp.swift in Sources */,
+				9A38F1DCABD56E45A2E831D8 /* UploadImagePreparer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

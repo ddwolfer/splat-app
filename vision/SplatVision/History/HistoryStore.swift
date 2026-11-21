@@ -17,6 +17,8 @@ struct HistoryEntry: Codable, Equatable, Identifiable, Sendable {
     var totalSeconds: Double
     var fileSize: Int64
     var origin: Origin
+    /// Local thumbnail file name in `thumbs/` (uploads only; nil for URL generations and old entries).
+    var thumbnailFile: String?
 
     var fileName: String { "\(id).ply" }
 }
@@ -31,7 +33,7 @@ enum HistoryError: LocalizedError {
     }
 }
 
-/// Generated splats kept on disk: `<root>/history.json` + `<root>/splats/<id>.ply`.
+/// Generated splats kept on disk: `<root>/history.json` + `<root>/splats/<id>.ply` (+ `<root>/thumbs/<id>.jpg`).
 ///
 /// Commit order keeps the two consistent: move the PLY in → atomically write the JSON → only then
 /// prune old entries (JSON first, files after). If the JSON write fails, the new file is removed.
@@ -49,6 +51,7 @@ final class HistoryStore {
 
     @ObservationIgnored let rootDirectory: URL
     @ObservationIgnored let splatsDirectory: URL
+    @ObservationIgnored let thumbsDirectory: URL
     @ObservationIgnored private let historyFile: URL
     @ObservationIgnored private let fileManager = FileManager.default
     /// Injectable for tests (to simulate a failed write).
@@ -59,6 +62,7 @@ final class HistoryStore {
     init(rootDirectory: URL) {
         self.rootDirectory = rootDirectory
         self.splatsDirectory = rootDirectory.appendingPathComponent("splats", isDirectory: true)
+        self.thumbsDirectory = rootDirectory.appendingPathComponent("thumbs", isDirectory: true)
         self.historyFile = rootDirectory.appendingPathComponent("history.json")
     }
 
@@ -66,12 +70,17 @@ final class HistoryStore {
         URL.applicationSupportDirectory.appendingPathComponent("SplatVision", isDirectory: true)
     }
 
+    /// PLY sizes plus the indexed thumbnails on disk.
     var totalBytes: Int64 {
-        entries.reduce(0) { $0 + $1.fileSize }
+        entries.reduce(0) { $0 + $1.fileSize } + indexedThumbnailBytes
     }
 
     func fileURL(for entry: HistoryEntry) -> URL {
         splatsDirectory.appendingPathComponent(entry.fileName)
+    }
+
+    func thumbnailURL(for entry: HistoryEntry) -> URL? {
+        entry.thumbnailFile.map { thumbsDirectory.appendingPathComponent($0) }
     }
 
     func entry(forFile url: URL) -> HistoryEntry? {
@@ -82,10 +91,11 @@ final class HistoryStore {
 
     /// Set when `history.json` exists but could not be read (it is renamed aside, not overwritten).
     private(set) var loadError: String?
-    /// PLY files in `splats/` that no entry refers to (e.g. after an index failure or a crash mid-commit).
-    /// They are never deleted automatically — only counted, and removed by "全部清除".
+    /// Files in `splats/` and `thumbs/` that no entry refers to (e.g. after an index failure or a crash
+    /// mid-commit). They are never deleted automatically — only counted, and removed by "全部清除".
     private(set) var unindexedFileCount = 0
     private(set) var unindexedBytes: Int64 = 0
+    private(set) var indexedThumbnailBytes: Int64 = 0
 
     func load() {
         try? prepareDirectories()
@@ -111,11 +121,16 @@ final class HistoryStore {
         let present = splatFileNames()
         let expected = Set(entries.map(\.fileName))
         missingFileIDs = Set(entries.filter { !present.contains($0.fileName) }.map(\.id))
-        let unindexed = present.filter { !expected.contains($0) }
-        unindexedFileCount = unindexed.count
-        unindexedBytes = unindexed.reduce(0) { total, name in
-            let path = splatsDirectory.appendingPathComponent(name).path
+        let expectedThumbs = Set(entries.compactMap(\.thumbnailFile))
+        indexedThumbnailBytes = thumbFileNames().filter { expectedThumbs.contains($0) }.reduce(0) { total, name in
+            let path = thumbsDirectory.appendingPathComponent(name).path
             return total + ((try? fileManager.attributesOfItem(atPath: path)[.size] as? Int64) ?? 0)
+        }
+        let unindexed = present.filter { !expected.contains($0) }.map { splatsDirectory.appendingPathComponent($0) }
+            + thumbFileNames().filter { !expectedThumbs.contains($0) }.map { thumbsDirectory.appendingPathComponent($0) }
+        unindexedFileCount = unindexed.count
+        unindexedBytes = unindexed.reduce(0) { total, url in
+            total + ((try? fileManager.attributesOfItem(atPath: url.path)[.size] as? Int64) ?? 0)
         }
     }
 
@@ -123,16 +138,23 @@ final class HistoryStore {
         Set((try? fileManager.contentsOfDirectory(atPath: splatsDirectory.path)) ?? [])
     }
 
+    private func thumbFileNames() -> Set<String> {
+        Set((try? fileManager.contentsOfDirectory(atPath: thumbsDirectory.path)) ?? [])
+    }
+
     private static let unreadablePrefix = "history.unreadable-"
 
     // MARK: - Commit
 
-    /// Moves `downloadedFile` into the store and records `entry` (replacing an entry with the same id).
+    /// Moves `downloadedFile` (and an optional `thumbnailFile`) into the store and records `entry`
+    /// (replacing an entry with the same id; a re-download keeps the existing thumbnail).
     /// Entries whose file is in `protectedFiles` (e.g. currently displayed) are never pruned.
     @discardableResult
-    func commit(downloadedFile: URL, entry: HistoryEntry, protectedFiles: Set<URL> = []) throws -> HistoryEntry {
+    func commit(downloadedFile: URL, entry: HistoryEntry, thumbnailFile: URL? = nil,
+                protectedFiles: Set<URL> = []) throws -> HistoryEntry {
         guard Self.isSafeFileStem(entry.id) else {
             try? fileManager.removeItem(at: downloadedFile)
+            if let thumbnailFile { try? fileManager.removeItem(at: thumbnailFile) }
             throw HistoryError.invalidID(entry.id)
         }
         try prepareDirectories()
@@ -151,11 +173,31 @@ final class HistoryStore {
             try fileManager.moveItem(at: downloadedFile, to: destination)
         }
 
+        // Thumbnail is optional: if it cannot be stored, the entry simply has none.
+        var newThumbnail: URL?
+        if let thumbnailFile {
+            let name = "\(entry.id).jpg"
+            let thumbDestination = thumbsDirectory.appendingPathComponent(name)
+            let existed = fileManager.fileExists(atPath: thumbDestination.path)
+            let stored = existed
+                ? (try? fileManager.replaceItemAt(thumbDestination, withItemAt: thumbnailFile)) != nil
+                : (try? fileManager.moveItem(at: thumbnailFile, to: thumbDestination)) != nil
+            if stored {
+                entry.thumbnailFile = name
+                if !existed { newThumbnail = thumbDestination }
+            } else {
+                try? fileManager.removeItem(at: thumbnailFile)
+            }
+        } else if entry.thumbnailFile == nil {
+            entry.thumbnailFile = previousEntries.first { $0.id == entry.id }?.thumbnailFile
+        }
+
         let updated = [entry] + previousEntries.filter { $0.id != entry.id }
         do {
             try persist(updated)
         } catch {
             if !hadPreviousFile { try? fileManager.removeItem(at: destination) }
+            if let newThumbnail { try? fileManager.removeItem(at: newThumbnail) }
             throw error
         }
         entries = updated
@@ -170,7 +212,7 @@ final class HistoryStore {
         let remaining = entries.filter { $0.id != entry.id }
         try persist(remaining)
         entries = remaining
-        try? fileManager.removeItem(at: fileURL(for: entry))
+        removeFiles(of: entry)
         refreshFileState()
     }
 
@@ -182,6 +224,9 @@ final class HistoryStore {
         loadError = nil
         for name in splatFileNames() {
             try? fileManager.removeItem(at: splatsDirectory.appendingPathComponent(name))
+        }
+        for name in thumbFileNames() {
+            try? fileManager.removeItem(at: thumbsDirectory.appendingPathComponent(name))
         }
         let backups = ((try? fileManager.contentsOfDirectory(atPath: rootDirectory.path)) ?? [])
             .filter { $0.hasPrefix(Self.unreadablePrefix) }
@@ -209,8 +254,13 @@ final class HistoryStore {
         guard !removed.isEmpty, (try? persist(kept)) != nil else { return }
         entries = kept
         for entry in removed {
-            try? fileManager.removeItem(at: fileURL(for: entry))
+            removeFiles(of: entry)
         }
+    }
+
+    private func removeFiles(of entry: HistoryEntry) {
+        try? fileManager.removeItem(at: fileURL(for: entry))
+        if let thumbnail = thumbnailURL(for: entry) { try? fileManager.removeItem(at: thumbnail) }
     }
 
     private func persist(_ entries: [HistoryEntry]) throws {
@@ -220,6 +270,7 @@ final class HistoryStore {
 
     private func prepareDirectories() throws {
         try fileManager.createDirectory(at: splatsDirectory, withIntermediateDirectories: true)
+        try fileManager.createDirectory(at: thumbsDirectory, withIntermediateDirectories: true)
         // ~63 MB per splat: keep it out of iCloud backups.
         var root = rootDirectory
         var values = URLResourceValues()
