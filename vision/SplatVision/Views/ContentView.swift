@@ -46,7 +46,8 @@ struct ContentView: View {
     /// Dev/automation hooks (launch arguments), so the simulator can be driven and screenshotted
     /// without clicking: `-autoOpenMock YES`, `-autoOpenFile <ply path>`, `-autoGenerateURL <url>`,
     /// `-autoUploadPath <image path>`, `-showSettings YES`, `-hideWindow YES` (closes this window
-    /// a few seconds after opening a splat, for unobstructed screenshots).
+    /// a few seconds after opening a splat, for unobstructed screenshots), `-sceneGesture <steps>`
+    /// (scripted pinches once the scene is placed, see `SyntheticGesture`).
     private func runLaunchHooks() {
         // Once per process: reopening the main window must not re-run them (e.g. hide itself again).
         guard !Self.launchHooksRan else { return }
@@ -57,6 +58,12 @@ struct ContentView: View {
         }
         if let path = defaults.string(forKey: "autoOpenFile"), !path.isEmpty {
             immersive.show(.localFile(URL(fileURLWithPath: path)))
+        }
+        if let spec = defaults.string(forKey: "sceneGesture"), !spec.isEmpty {
+            Task {
+                for _ in 0..<300 where !immersive.isPlaced { try? await Task.sleep(for: .milliseconds(100)) }
+                if !immersive.runSyntheticGesture(spec) { print("Invalid -sceneGesture: \(spec)") }
+            }
         }
         if defaults.bool(forKey: "hideWindow") {
             Task {

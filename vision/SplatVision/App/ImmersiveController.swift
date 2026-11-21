@@ -1,5 +1,6 @@
 import Foundation
 import Observation
+import simd
 import SwiftUI
 
 /// Events the immersive renderer reports back to the UI.
@@ -10,7 +11,15 @@ enum RendererEvent: Sendable {
     case failed(message: String)
     case tracking(HeadPoseResolver.Status)
     case stats(RenderStats)
+    /// The head-based placement was (re)computed; gesture adjustments of older generations are void.
+    case placementChanged(generation: Int)
     case closed
+}
+
+/// What the main window shows about the user's gesture adjustment.
+struct SceneAdjustmentSummary: Equatable {
+    var isAdjusted: Bool
+    var scale: Float
 }
 
 /// Owns the immersive space. Every "show X" / "close" goes through one serialized queue where the
@@ -69,6 +78,11 @@ final class ImmersiveController {
     private(set) var isTransitioning = false
     /// Shown as "切換中 → …": the queued source, or the one currently being switched to.
     private(set) var pendingSource: SplatSource?
+    private(set) var adjustmentSummary = SceneAdjustmentSummary(isAdjusted: false, scale: 1)
+
+    @ObservationIgnored private var manipulator = SceneManipulator()
+    /// Placement generation the manipulator's adjustment belongs to (see `PlacementController.generation`).
+    @ObservationIgnored private var placementGeneration = 0
 
     @ObservationIgnored private weak var renderer: SplatSceneRenderer?
     @ObservationIgnored private var rendererEverReported = false
@@ -130,8 +144,43 @@ final class ImmersiveController {
         enqueue(.close)
     }
 
+    /// Re-places the scene at the current head pose. Gesture adjustments are cleared when the renderer
+    /// actually applies it (`.placementChanged`), which may wait for head tracking to come back.
     func recenter() {
         renderer?.requestRecenter()
+    }
+
+    /// Current gesture adjustment (world space, applied on top of the placement).
+    var gestureAdjustment: simd_float4x4 { manipulator.adjustment }
+
+    /// Pinch samples from the immersive space's spatial events.
+    func handlePinches(_ samples: [PinchSample], requestID: UUID) {
+        guard requestID == currentRequest?.id, state == .open, !samples.isEmpty else { return }
+        manipulator.apply(samples)
+        renderer?.setAdjustment(manipulator.adjustment, generation: placementGeneration)
+        publishAdjustment()
+    }
+
+    /// True once the open scene has been placed (gestures can act on it).
+    var isPlaced: Bool { state == .open && placementGeneration > 0 }
+
+    /// Runs a scripted gesture (`SyntheticGesture`) on the current scene. Returns false if the spec is invalid.
+    @discardableResult
+    func runSyntheticGesture(_ spec: String) -> Bool {
+        guard let batches = SyntheticGesture.batches(spec), let id = currentRequest?.id else { return false }
+        for batch in batches { handlePinches(batch, requestID: id) }
+        return true
+    }
+
+    private func resetAdjustment(generation: Int) {
+        manipulator.reset()
+        placementGeneration = generation
+        publishAdjustment()
+    }
+
+    private func publishAdjustment() {
+        let summary = SceneAdjustmentSummary(isAdjusted: manipulator.isAdjusted, scale: manipulator.scale)
+        if summary != adjustmentSummary { adjustmentSummary = summary }
     }
 
     /// Closes the space, blocks new `show` requests, and runs `work` only if the space really closed.
@@ -179,6 +228,8 @@ final class ImmersiveController {
             loadState = .failed(message: message)
         case let .tracking(status):
             trackingStatus = status
+        case let .placementChanged(generation):
+            resetAdjustment(generation: generation)
         case .closed:
             state = .closed
             resourcesPending = false
@@ -276,6 +327,7 @@ final class ImmersiveController {
         lastOpenError = nil
         renderer = nil
         rendererEverReported = false
+        resetAdjustment(generation: 0)
         state = .opening
         let result = await openSpace(request)
         guard request.id == currentRequest?.id else { return }

@@ -10,6 +10,7 @@
 		01A415DFEB4F2E45833E296F /* HTTPSplatServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2130A39E77A8E6661BE307F /* HTTPSplatServiceTests.swift */; };
 		029EBFD6C17B388B07D2E0F6 /* HeadPoseResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99F2C956966A9C9C09D4767 /* HeadPoseResolverTests.swift */; };
 		046F148BF5E52C50E5A4155B /* SplatSceneRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B5D2E2EFC60EA64D7FFDA1 /* SplatSceneRenderer.swift */; };
+		04D830B7EAC76E14AC6AB15D /* SceneManipulator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58BE31E3840EDE5F477CEFD5 /* SceneManipulator.swift */; };
 		05CD5B499ECE1DC7DA80D8FF /* SplatIO in Frameworks */ = {isa = PBXBuildFile; productRef = 13C065B6D840477E014D74E8 /* SplatIO */; };
 		06B5B2403F1B71ED2480894E /* SplatDiagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = D082A06F2FD73DF9773D5B9A /* SplatDiagnostics.swift */; };
 		1C9FBC8B67A85BBC4EC91A8A /* ImmersiveController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BD0F7FE03FCC44881EDB514 /* ImmersiveController.swift */; };
@@ -48,6 +49,7 @@
 		F972765B06FBFE466F80FAAE /* MockServerIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80277395EC9B5B072BD252F3 /* MockServerIntegrationTests.swift */; };
 		FA767B31C6A5EC1BBF853FC3 /* HTTPSplatService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B296A9AE6709A41A2A82C3D2 /* HTTPSplatService.swift */; };
 		FE9B6A2AAAE278729B2B9234 /* PlacementControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD1744D634C51E0F923126D /* PlacementControllerTests.swift */; };
+		FF2C2DCA8BC13F6B159D4BD4 /* SceneManipulatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 766A10FCBAE74EA0F8CA4DC7 /* SceneManipulatorTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -79,11 +81,13 @@
 		4C03153FB4057F390AB0C692 /* GenerationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenerationController.swift; sourceTree = "<group>"; };
 		4E01A29F4509BEA7895D23DA /* SceneTransforms.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneTransforms.swift; sourceTree = "<group>"; };
 		53EE2966B88FF32C2552F60C /* PlacementController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlacementController.swift; sourceTree = "<group>"; };
+		58BE31E3840EDE5F477CEFD5 /* SceneManipulator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneManipulator.swift; sourceTree = "<group>"; };
 		5EC0155F0EA46037C2494D29 /* SplatVision.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = SplatVision.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		61F39BEDD4C7A7392ABD1968 /* SceneTransformsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneTransformsTests.swift; sourceTree = "<group>"; };
 		66218090044EA55A17A3383F /* MockSplatService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockSplatService.swift; sourceTree = "<group>"; };
 		6B7CDC60F5BD3E9938487091 /* ContentStageConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentStageConfiguration.swift; sourceTree = "<group>"; };
 		6C77F3E7E31E15E813224C50 /* SplatVisionApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplatVisionApp.swift; sourceTree = "<group>"; };
+		766A10FCBAE74EA0F8CA4DC7 /* SceneManipulatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneManipulatorTests.swift; sourceTree = "<group>"; };
 		80277395EC9B5B072BD252F3 /* MockServerIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockServerIntegrationTests.swift; sourceTree = "<group>"; };
 		829B65C00BB8ED43B0E430DE /* HistorySection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistorySection.swift; sourceTree = "<group>"; };
 		9A83489D52C1EF4B63C15CD4 /* ImmersiveSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImmersiveSection.swift; sourceTree = "<group>"; };
@@ -148,6 +152,7 @@
 				38B7DAC555DD65D85C5FF433 /* MockPLYTests.swift */,
 				80277395EC9B5B072BD252F3 /* MockServerIntegrationTests.swift */,
 				BCD1744D634C51E0F923126D /* PlacementControllerTests.swift */,
+				766A10FCBAE74EA0F8CA4DC7 /* SceneManipulatorTests.swift */,
 				61F39BEDD4C7A7392ABD1968 /* SceneTransformsTests.swift */,
 				12A8C9B7132B33E56638C3E2 /* SharpPLYLoaderTests.swift */,
 				B81DB372E87AE30EC0DCE968 /* StubURLProtocol.swift */,
@@ -191,6 +196,7 @@
 				53EE2966B88FF32C2552F60C /* PlacementController.swift */,
 				314DF6A1F8A0FC35C48F984E /* RendererTaskExecutor.swift */,
 				0E8F466C87D54BB2CDBBB21C /* RenderMetrics.swift */,
+				58BE31E3840EDE5F477CEFD5 /* SceneManipulator.swift */,
 				4E01A29F4509BEA7895D23DA /* SceneTransforms.swift */,
 				DCEBDB1C8AB85D22841E9145 /* SharpPLYLoader.swift */,
 				D082A06F2FD73DF9773D5B9A /* SplatDiagnostics.swift */,
@@ -372,6 +378,7 @@
 				20A4B259373EB5BE6D34893C /* MockPLYTests.swift in Sources */,
 				F972765B06FBFE466F80FAAE /* MockServerIntegrationTests.swift in Sources */,
 				FE9B6A2AAAE278729B2B9234 /* PlacementControllerTests.swift in Sources */,
+				FF2C2DCA8BC13F6B159D4BD4 /* SceneManipulatorTests.swift in Sources */,
 				4EF87593230B0EAF0EB06C86 /* SceneTransformsTests.swift in Sources */,
 				9BA90BBF494A142759412312 /* SharpPLYLoaderTests.swift in Sources */,
 				62CD8981FAEDA07DC8854F8F /* StubURLProtocol.swift in Sources */,
@@ -399,6 +406,7 @@
 				3D7AFC98C6C03705EE9F549B /* PlacementController.swift in Sources */,
 				C13F7956E7A6EBF26CF56CB2 /* RenderMetrics.swift in Sources */,
 				5EB907A6E751F32B9A070780 /* RendererTaskExecutor.swift in Sources */,
+				04D830B7EAC76E14AC6AB15D /* SceneManipulator.swift in Sources */,
 				B7CB2475FFAD508E395C6888 /* SceneTransforms.swift in Sources */,
 				3C2BDD5D1255E9DCF3E78C68 /* ServerSettings.swift in Sources */,
 				D74996115B738D807C17B71F /* SettingsView.swift in Sources */,

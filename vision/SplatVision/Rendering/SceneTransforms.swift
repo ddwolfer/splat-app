@@ -19,6 +19,10 @@ enum SceneTransforms {
         return m
     }
 
+    static func uniformScale(_ s: Float) -> simd_float4x4 {
+        simd_float4x4(diagonal: SIMD4<Float>(s, s, s, 1))
+    }
+
     /// Rotation about +Y. Maps (0, 0, −1) to (−sin θ, 0, −cos θ).
     static func rotationY(_ radians: Float) -> simd_float4x4 {
         let c = cos(radians), s = sin(radians)
@@ -46,7 +50,9 @@ enum SceneTransforms {
     }
 
     /// Model matrix that maps ml-sharp (OpenCV) coordinates into the immersive space.
-    static func modelMatrix(placement: simd_float4x4) -> simd_float4x4 {
-        placement * openCVToVisionOS
+    /// `adjustment` is the user's gesture transform, applied in world space on top of the placement.
+    static func modelMatrix(placement: simd_float4x4,
+                            adjustment: simd_float4x4 = matrix_identity_float4x4) -> simd_float4x4 {
+        adjustment * placement * openCVToVisionOS
     }
 }

@@ -49,4 +49,14 @@ struct SceneTransformsTests {
     @Test func openCVConversionIsAProperRotation() {
         #expect(isApprox(simd_determinant(SceneTransforms.openCVToVisionOS), 1))
     }
+
+    @Test func adjustmentIsAppliedInWorldSpaceOnTopOfThePlacement() {
+        let placement = SceneTransforms.translation([0, 1.6, 0])
+        let down = SceneTransforms.translation([0, -0.5, 0])
+        // OpenCV point 2 m in front of the camera.
+        let model = SceneTransforms.modelMatrix(placement: placement, adjustment: down)
+        #expect(isApprox(transformPoint(model, [0, 0, 2]), [0, 1.1, -2]))
+        #expect(isApprox(SceneTransforms.modelMatrix(placement: placement),
+                         SceneTransforms.modelMatrix(placement: placement, adjustment: matrix_identity_float4x4)))
+    }
 }

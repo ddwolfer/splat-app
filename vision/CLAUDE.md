@@ -40,6 +40,7 @@
   `-autoGenerateURL <圖片網址>` 自動生成、`-autoUploadPath <Mac 上的圖片路徑>` 走照片上傳流程、
   `-showPhotoPicker YES` 開照片選擇器、`-showSettings YES` 開設定頁、`-splatBudget 300000` 顯示品質上限、
   `-serverBaseURL <url> -useMockService NO` 暫時指定 server（不寫入設定）。
+  `-sceneGesture "drag:0,-0.5,0; twist:30; spread:0.5"` 場景放好後執行模擬捏合（模擬器無法雙手捏合，截圖驗證用，見 `SyntheticGesture`）。
 - App 的 Mock 模式（設定頁開關，預設開到第一次儲存 Base URL 為止）：不連網路，回傳內建範例。
 
 ## 座標系（重要）
@@ -47,6 +48,9 @@
 - ml-sharp PLY 是 OpenCV 慣例（x 右、y 下、z 前，相機在原點，單位公尺）；visionOS 是 y 上、−z 前。
 - 轉換在 `SplatVision/Rendering/SceneTransforms.swift`：model 矩陣 = `placement · diag(1, −1, −1, 1)`。
 - `placement` = 開啟當下的頭部位置 + 水平朝向（只取 yaw），之後固定在世界座標；「重新置中」會重算。
+- 手勢調整（V5，`SceneManipulator`）：model = `adjustment · placement · flip`，`adjustment` 在世界座標。
+  單手捏住拖曳平移（水平 3 倍、垂直 1:1）、雙手轉向與縮放（以兩手中點為軸，總縮放 0.1～4）。
+  placement 每次真的重算（`PlacementController.generation` 加 1）時，renderer 在同一幀清除調整並通知 UI，舊世代的調整會被忽略。
 
 ## 注意事項
 

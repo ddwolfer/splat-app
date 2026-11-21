@@ -10,6 +10,9 @@ struct PlacementController {
     private(set) var placement: simd_float4x4?
     /// True when `placement` was computed from a simulated (fallback) head pose.
     private(set) var isProvisional = false
+    /// Incremented every time `placement` is actually (re)computed: first placement, an applied recenter,
+    /// or a simulated placement replaced by a real one. Gesture adjustments are tied to one generation.
+    private(set) var generation = 0
     private var recenterRequested = false
 
     mutating func requestRecenter() {
@@ -32,6 +35,7 @@ struct PlacementController {
             placement = newPlacement
             isProvisional = isSimulated
             recenterRequested = false
+            generation += 1
         }
         return placement
     }

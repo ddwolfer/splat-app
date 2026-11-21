@@ -10,6 +10,7 @@ import os
 import QuartzCore
 import simd
 import SplatIO
+import SwiftUI
 import Synchronization
 
 extension LayerRenderer.Clock.Instant.Duration {
@@ -48,6 +49,9 @@ final class SplatSceneRenderer: @unchecked Sendable {
         var loadTask: Task<Void, Never>?
         var recenterRequested = false
         var isShutDown = false
+        /// User's gesture adjustment (world space) and the placement generation it belongs to.
+        var adjustment = matrix_identity_float4x4
+        var adjustmentGeneration = 0
     }
     private let shared = Mutex(Shared())
     private let stats = StatsBox()
@@ -57,6 +61,7 @@ final class SplatSceneRenderer: @unchecked Sendable {
     private var renderThreadHeadResolver = HeadPoseResolver()
     private var renderThreadPlacement = PlacementController()
     private var renderThreadReportedStatus: HeadPoseResolver.Status?
+    private var renderThreadReportedGeneration = 0
 
     private init(_ layerRenderer: LayerRenderer, request: SplatRequest?, events: AsyncStream<RendererEvent>.Continuation) {
         self.layerRenderer = layerRenderer
@@ -73,12 +78,16 @@ final class SplatSceneRenderer: @unchecked Sendable {
         self.events = events
     }
 
-    /// Entry point from the `CompositorLayer` closure.
+    /// Entry point from the `CompositorLayer` closure (runs on the main actor).
+    @MainActor
     static func start(_ layerRenderer: LayerRenderer, request: SplatRequest?, immersive: ImmersiveController) {
         let (stream, continuation) = AsyncStream.makeStream(of: RendererEvent.self)
         let renderer = SplatSceneRenderer(layerRenderer, request: request, events: continuation)
 
         if let requestID = request?.id {
+            layerRenderer.onSpatialEvent = { [weak immersive] events in
+                immersive?.handlePinches(pinchSamples(from: events), requestID: requestID)
+            }
             Task { @MainActor in
                 immersive.attach(renderer, requestID: requestID)
                 for await event in stream {
@@ -97,6 +106,29 @@ final class SplatSceneRenderer: @unchecked Sendable {
     /// Called from the UI: re-anchor the scene in front of the user on the next valid head pose.
     func requestRecenter() {
         shared.withLock { $0.recenterRequested = true }
+    }
+
+    /// Called from the UI with the gesture adjustment. Ignored if the placement has changed since the UI
+    /// last heard (`generation` is stale), so an old gesture never lands on a new placement.
+    func setAdjustment(_ adjustment: simd_float4x4, generation: Int) {
+        shared.withLock { state in
+            guard state.adjustmentGeneration == generation else { return }
+            state.adjustment = adjustment
+        }
+    }
+
+    /// Pinches (look + pinch, or direct) with their pinch location; ends/cancels are kept even without one.
+    private static func pinchSamples(from events: SpatialEventCollection) -> [PinchSample] {
+        events.compactMap { event in
+            guard event.kind == .indirectPinch || event.kind == .directPinch else { return nil }
+            let phase: PinchSample.Phase = switch event.phase {
+            case .active: .active
+            case .ended: .ended
+            default: .cancelled
+            }
+            let position = event.inputDevicePose.map { SIMD3<Float>($0.pose3D.position.vector) }
+            return PinchSample(id: AnyHashable(event.id), phase: phase, position: position)
+        }
     }
 
     // MARK: - Loading
@@ -264,7 +296,20 @@ final class SplatSceneRenderer: @unchecked Sendable {
             renderThreadPlacement.requestRecenter()
         }
         let placement = pose.flatMap { renderThreadPlacement.update(with: $0) }
-        let splatRenderer = shared.withLock { $0.splatRenderer }
+        // A new placement voids the gesture adjustment in the same frame (and tells the UI).
+        let generation = renderThreadPlacement.generation
+        let placementChanged = generation != renderThreadReportedGeneration
+        let (splatRenderer, adjustment) = shared.withLock { state in
+            if placementChanged {
+                state.adjustment = matrix_identity_float4x4
+                state.adjustmentGeneration = generation
+            }
+            return (state.splatRenderer, state.adjustment)
+        }
+        if placementChanged {
+            renderThreadReportedGeneration = generation
+            events.yield(.placementChanged(generation: generation))
+        }
 
         defer { reportStatsIfDue() }
         guard let pose, let placement, let splatRenderer else {
@@ -277,7 +322,7 @@ final class SplatSceneRenderer: @unchecked Sendable {
         _ = inFlightSemaphore.wait(timeout: .distantFuture)
         frame.startSubmission()
 
-        let model = SceneTransforms.modelMatrix(placement: placement)
+        let model = SceneTransforms.modelMatrix(placement: placement, adjustment: adjustment)
         var frameHadSkip = false
         for (index, drawable) in drawables.enumerated() {
             guard let commandBuffer = commandQueue.makeCommandBuffer() else {

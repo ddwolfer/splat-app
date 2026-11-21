@@ -90,4 +90,22 @@ struct PlacementControllerTests {
         let expected = try #require(SceneTransforms.placement(fromHead: moved))
         #expect(isApprox(placement, expected))
     }
+
+    @Test func generationCountsOnlyRealPlacementChanges() {
+        var controller = PlacementController()
+        #expect(controller.generation == 0)
+        controller.update(head: HeadPoseResolver.simulatedHead, isSimulated: true)
+        #expect(controller.generation == 1)
+        controller.update(head: start, isSimulated: false)  // simulated → real: replaced
+        #expect(controller.generation == 2)
+        controller.update(head: moved, isSimulated: false)  // world-locked: unchanged
+        #expect(controller.generation == 2)
+
+        // A recenter waiting for a usable pose does not count until it is applied.
+        controller.requestRecenter()
+        controller.update(head: headTransform(position: [0, 1.6, 0], pitch: -.pi / 2), isSimulated: false)
+        #expect(controller.generation == 2)
+        controller.update(head: moved, isSimulated: false)
+        #expect(controller.generation == 3)
+    }
 }

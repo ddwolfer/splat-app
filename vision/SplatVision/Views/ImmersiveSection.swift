@@ -47,11 +47,24 @@ struct ImmersiveSection: View {
             if let error = immersive.lastOpenError {
                 Label(error, systemImage: "exclamationmark.triangle").foregroundStyle(.red)
             }
+            if immersive.state == .open {
+                adjustmentStatus
+            }
             if immersive.state != .closed {
                 PerformanceView(stats: immersive.renderStats)
             }
         }
         .font(.callout)
+    }
+
+    @ViewBuilder
+    private var adjustmentStatus: some View {
+        Label("在場景中捏住拖曳可移動（前後左右 3 倍、上下 1:1）；雙手捏住可旋轉、縮放", systemImage: "hand.pinch")
+            .foregroundStyle(.secondary)
+        if immersive.adjustmentSummary.isAdjusted {
+            let scale = immersive.adjustmentSummary.scale.formatted(.number.precision(.fractionLength(2)))
+            Label("已手動調整 · 縮放 \(scale)×（「重新置中」會清除調整）", systemImage: "move.3d")
+        }
     }
 
     private func loadDetail(_ report: LoadReport) -> String {

@@ -1,4 +1,5 @@
 import Foundation
+import simd
 import Testing
 @testable import SplatVision
 
@@ -140,5 +141,59 @@ struct ImmersiveControllerTests {
             return
         }
         #expect(report.firstSortSeconds == 0.7)
+    }
+
+    // MARK: - Gesture adjustment
+
+    private func openedController(_ source: SplatSource) async throws -> (ImmersiveController, UUID) {
+        let controller = ImmersiveController()
+        controller.configure(open: { _ in .opened }, dismiss: {})
+        controller.show(source)
+        let deadline = ContinuousClock.now + .seconds(2)
+        while controller.isTransitioning, ContinuousClock.now < deadline { try? await Task.sleep(for: .milliseconds(10)) }
+        return (controller, try #require(controller.currentRequest?.id))
+    }
+
+    private func drag(_ controller: ImmersiveController, requestID: UUID, dy: Float) {
+        controller.handlePinches([PinchSample(id: AnyHashable(1), phase: .active, position: [0, 1, -0.5])], requestID: requestID)
+        controller.handlePinches([PinchSample(id: AnyHashable(1), phase: .active, position: [0, 1 + dy, -0.5])], requestID: requestID)
+        controller.handlePinches([PinchSample(id: AnyHashable(1), phase: .ended, position: nil)], requestID: requestID)
+    }
+
+    @Test func pinchesAdjustTheSceneUntilThePlacementChanges() async throws {
+        let (controller, id) = try await openedController(a)
+        #expect(controller.adjustmentSummary == SceneAdjustmentSummary(isAdjusted: false, scale: 1))
+        drag(controller, requestID: id, dy: -0.4)
+        #expect(controller.adjustmentSummary.isAdjusted)
+        #expect(isApprox(transformPoint(controller.gestureAdjustment, .zero), [0, -0.4, 0]))
+
+        // The renderer re-placed the scene (e.g. an applied recenter): the adjustment starts over.
+        controller.handle(.placementChanged(generation: 2), requestID: id)
+        #expect(!controller.adjustmentSummary.isAdjusted)
+        #expect(isApprox(controller.gestureAdjustment, matrix_identity_float4x4))
+    }
+
+    @Test func recenterAloneKeepsTheAdjustmentUntilItIsApplied() async throws {
+        let (controller, id) = try await openedController(a)
+        drag(controller, requestID: id, dy: -0.4)
+        controller.recenter()  // tracking may be held: nothing is cleared until `.placementChanged`
+        #expect(controller.adjustmentSummary.isAdjusted)
+    }
+
+    @Test func pinchesForAnOldRequestAreIgnored() async throws {
+        let (controller, _) = try await openedController(a)
+        drag(controller, requestID: UUID(), dy: -0.4)
+        #expect(!controller.adjustmentSummary.isAdjusted)
+    }
+
+    @Test func switchingScenesClearsTheAdjustment() async throws {
+        let (controller, id) = try await openedController(a)
+        drag(controller, requestID: id, dy: -0.4)
+        controller.handle(.closed, requestID: id)
+        controller.show(b)
+        let deadline = ContinuousClock.now + .seconds(2)
+        while controller.isTransitioning, ContinuousClock.now < deadline { try? await Task.sleep(for: .milliseconds(10)) }
+        #expect(controller.displayedSource == b)
+        #expect(!controller.adjustmentSummary.isAdjusted)
     }
 }
