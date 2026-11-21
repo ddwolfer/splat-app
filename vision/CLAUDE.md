@@ -27,6 +27,16 @@
 - 模擬器自動化：`xcrun simctl launch booted io.github.ddwolfer.SplatVision -autoOpenMock YES` 會自動開啟範例，
   再用 `xcrun simctl io booted screenshot out.png` 截圖。
 - Xcode 26 首次建置若出現 missing Metal Toolchain：`xcodebuild -downloadComponent MetalToolchain`。
+- **本機 mock server**（照 API.md 回應，不需要 Windows PC）：
+  ```
+  python3 vision/tools/mock_server.py --host <Mac 區網 IP> --port 8765 [--count 1179648]   # --count：產生跟 SHARP 一樣大的 63 MB 檔
+  ```
+  App 的設定填 `http://<Mac 區網 IP>:8765`。`image_url` 含 `error`／`busy`／`slow` 會回 400／503／延遲 10 秒。
+  整合測試：`TEST_RUNNER_SPLAT_MOCK_SERVER=http://<Mac 區網 IP>:8765 xcodebuild test ...`（沒設就跳過）。
+  用區網 IP 而不是 127.0.0.1，才會測到 ATS 的區網例外。
+- 其他啟動參數：`-autoGenerateURL <圖片網址>` 自動生成、`-showSettings YES` 開設定頁、
+  `-serverBaseURL <url> -useMockService NO` 暫時指定 server（不寫入設定）。
+- App 的 Mock 模式（設定頁開關，預設開到第一次儲存 Base URL 為止）：不連網路，回傳內建範例。
 
 ## 座標系（重要）
 

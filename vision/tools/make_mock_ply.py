@@ -12,13 +12,16 @@ The scene is deliberately asymmetric so a wrong coordinate conversion is obvious
     with a white arrow pointing UP (OpenCV "up" is -y)
   - a red ball on the LEFT (z = 2 m) and a yellow cube on the RIGHT (z = 2.5 m)
 
-Usage: make_mock_ply.py OUTPUT.ply
+Usage: make_mock_ply.py OUTPUT.ply [--count N]
+  --count N  pad the scene with extra (seeded, deterministic) splats just in front of the backdrop
+             until it has N splats, e.g. 1179648 to match a real SHARP file (~63 MB) for load tests.
 The first vertex written is a fixed probe splat used by the unit tests (see PROBE below).
 """
 
+import argparse
 import math
+import random
 import struct
-import sys
 
 C0 = 0.28209479177387814
 
@@ -126,12 +129,28 @@ def cube(center, size, color, spacing=0.02):
     return out
 
 
-def build_scene():
+def build_scene(count=None):
     splats = [splat(PROBE["position"], PROBE["srgb"], PROBE["alpha"], PROBE["sigma"])]
     splats += backdrop()
     splats += ball(center=(-0.75, 0.15, 2.0), radius=0.25, color=(0.90, 0.12, 0.10))
     splats += cube(center=(0.75, -0.15, 2.5), size=0.4, color=(0.98, 0.85, 0.10))
+    if count is not None and count > len(splats):
+        splats += filler(count - len(splats))
     return splats
+
+
+def filler(n, z=4.02):
+    """Small, faint splats in a thin layer just in front of the backdrop, coloured like it."""
+    rng = random.Random(1234)
+    half_w = z * math.tan(math.radians(HFOV_DEG / 2))
+    half_h = half_w * IMAGE_H / IMAGE_W
+    out = []
+    for _ in range(n):
+        x = rng.uniform(-half_w, half_w)
+        y = rng.uniform(-half_h, half_h)
+        color = (0.97, 0.97, 0.97) if in_up_arrow(x, y) else ((0.4, 0.65, 0.95) if y < 0 else (0.25, 0.55, 0.18))
+        out.append(splat((x, y, z + rng.uniform(-0.01, 0.01)), color, 0.3, (0.006, 0.006, 0.003)))
+    return out
 
 
 def write_ply(path, splats):
@@ -166,11 +185,13 @@ def write_ply(path, splats):
 
 
 def main():
-    if len(sys.argv) != 2:
-        sys.exit("usage: make_mock_ply.py OUTPUT.ply")
-    splats = build_scene()
-    write_ply(sys.argv[1], splats)
-    print(f"wrote {len(splats)} splats to {sys.argv[1]}")
+    parser = argparse.ArgumentParser(description="Generate a mock SHARP-style splat PLY.")
+    parser.add_argument("output")
+    parser.add_argument("--count", type=int, default=None, help="pad to this many splats (e.g. 1179648)")
+    args = parser.parse_args()
+    splats = build_scene(args.count)
+    write_ply(args.output, splats)
+    print(f"wrote {len(splats)} splats to {args.output}")
 
 
 if __name__ == "__main__":

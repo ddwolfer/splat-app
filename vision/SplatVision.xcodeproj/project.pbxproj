@@ -7,24 +7,40 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		01A415DFEB4F2E45833E296F /* HTTPSplatServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2130A39E77A8E6661BE307F /* HTTPSplatServiceTests.swift */; };
 		029EBFD6C17B388B07D2E0F6 /* HeadPoseResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99F2C956966A9C9C09D4767 /* HeadPoseResolverTests.swift */; };
 		046F148BF5E52C50E5A4155B /* SplatSceneRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B5D2E2EFC60EA64D7FFDA1 /* SplatSceneRenderer.swift */; };
 		05CD5B499ECE1DC7DA80D8FF /* SplatIO in Frameworks */ = {isa = PBXBuildFile; productRef = 13C065B6D840477E014D74E8 /* SplatIO */; };
+		1C9FBC8B67A85BBC4EC91A8A /* ImmersiveController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BD0F7FE03FCC44881EDB514 /* ImmersiveController.swift */; };
 		20A4B259373EB5BE6D34893C /* MockPLYTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38B7DAC555DD65D85C5FF433 /* MockPLYTests.swift */; };
+		22CCBEE450B3EDF09D993898 /* GenerationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C03153FB4057F390AB0C692 /* GenerationController.swift */; };
+		2483CD1C36937960320F3644 /* GenerateSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF6BE5A34DD72D9D83FF7D04 /* GenerateSection.swift */; };
 		24F1D91C5DAFC4A61629289E /* SplatLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21A2028701B277D70DD32DDE /* SplatLoader.swift */; };
+		27B1EA3C486B55E387D25C20 /* HistoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC24ECA823BFA50449450367 /* HistoryStore.swift */; };
+		3C2BDD5D1255E9DCF3E78C68 /* ServerSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = B03470B2004968E88F8866E4 /* ServerSettings.swift */; };
 		3D7AFC98C6C03705EE9F549B /* PlacementController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53EE2966B88FF32C2552F60C /* PlacementController.swift */; };
+		41829D696EE2A615E666BDB0 /* HistorySection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 829B65C00BB8ED43B0E430DE /* HistorySection.swift */; };
 		4A06D4B5D17890BF99F41A25 /* SplatRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A727540068DE4F6B63FAACFA /* SplatRequest.swift */; };
 		4EF87593230B0EAF0EB06C86 /* SceneTransformsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61F39BEDD4C7A7392ABD1968 /* SceneTransformsTests.swift */; };
 		5EB907A6E751F32B9A070780 /* RendererTaskExecutor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 314DF6A1F8A0FC35C48F984E /* RendererTaskExecutor.swift */; };
+		6119B8A3F568E4EDD57CADE8 /* MockSplatService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66218090044EA55A17A3383F /* MockSplatService.swift */; };
+		62CD8981FAEDA07DC8854F8F /* StubURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B81DB372E87AE30EC0DCE968 /* StubURLProtocol.swift */; };
+		6B69E104661AC2928170BB85 /* ImmersiveSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A83489D52C1EF4B63C15CD4 /* ImmersiveSection.swift */; };
+		716CEAD3A8009ED5F11E5A45 /* HistoryStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F3D64C9C7A3DB4324F49B49 /* HistoryStoreTests.swift */; };
 		761C39B5FDEE8E28F24B5441 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD2724A3C4DCF55F0BB11747 /* ContentView.swift */; };
 		7AF67B0ACD3BB2342C53DF7C /* HeadPoseResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45AD1A879E69C591D9071871 /* HeadPoseResolver.swift */; };
 		7C278246B9DB8EC456C8EAC6 /* ContentStageConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B7CDC60F5BD3E9938487091 /* ContentStageConfiguration.swift */; };
+		8C972A656951C58E51357B5F /* SplatService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8FDAD5F9DCE232377FA7B6 /* SplatService.swift */; };
+		95D89EBEA1572511F13D5155 /* GenerationControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 290652F0A47E5C0E30ACBB3A /* GenerationControllerTests.swift */; };
 		AB92C76A033A784D3CD06DC6 /* TestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20D78D6AF04A2885E5CD246B /* TestHelpers.swift */; };
 		B7CB2475FFAD508E395C6888 /* SceneTransforms.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E01A29F4509BEA7895D23DA /* SceneTransforms.swift */; };
+		D74996115B738D807C17B71F /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA24DC0AD289BE018F3B71E4 /* SettingsView.swift */; };
 		EC45C87CB78451D3DC890D88 /* MetalSplatter in Frameworks */ = {isa = PBXBuildFile; productRef = 40809E0C5870BE18C62BF177 /* MetalSplatter */; };
 		F04EAFEC297AB8184E722A38 /* SplatVisionApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C77F3E7E31E15E813224C50 /* SplatVisionApp.swift */; };
+		F155ED7766CB0AD356ACA8F5 /* ImmersiveControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FBF05A9C2971CA0142D9144 /* ImmersiveControllerTests.swift */; };
+		F972765B06FBFE466F80FAAE /* MockServerIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80277395EC9B5B072BD252F3 /* MockServerIntegrationTests.swift */; };
+		FA767B31C6A5EC1BBF853FC3 /* HTTPSplatService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B296A9AE6709A41A2A82C3D2 /* HTTPSplatService.swift */; };
 		FE9B6A2AAAE278729B2B9234 /* PlacementControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD1744D634C51E0F923126D /* PlacementControllerTests.swift */; };
-		FEE033A1BF528CC763C68AF1 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EFD535AB3C5E05CF2372211 /* AppModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -39,24 +55,40 @@
 
 /* Begin PBXFileReference section */
 		053DBE7C86EEB39824728E5C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		0A8FDAD5F9DCE232377FA7B6 /* SplatService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplatService.swift; sourceTree = "<group>"; };
+		0BD0F7FE03FCC44881EDB514 /* ImmersiveController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImmersiveController.swift; sourceTree = "<group>"; };
+		1F3D64C9C7A3DB4324F49B49 /* HistoryStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryStoreTests.swift; sourceTree = "<group>"; };
 		1FE6785EABE027D0EE96DCD6 /* SplatVisionTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = SplatVisionTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		20D78D6AF04A2885E5CD246B /* TestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestHelpers.swift; sourceTree = "<group>"; };
 		21A2028701B277D70DD32DDE /* SplatLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplatLoader.swift; sourceTree = "<group>"; };
+		290652F0A47E5C0E30ACBB3A /* GenerationControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenerationControllerTests.swift; sourceTree = "<group>"; };
 		314DF6A1F8A0FC35C48F984E /* RendererTaskExecutor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RendererTaskExecutor.swift; sourceTree = "<group>"; };
 		38B7DAC555DD65D85C5FF433 /* MockPLYTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPLYTests.swift; sourceTree = "<group>"; };
 		45AD1A879E69C591D9071871 /* HeadPoseResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadPoseResolver.swift; sourceTree = "<group>"; };
+		4C03153FB4057F390AB0C692 /* GenerationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenerationController.swift; sourceTree = "<group>"; };
 		4E01A29F4509BEA7895D23DA /* SceneTransforms.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneTransforms.swift; sourceTree = "<group>"; };
 		53EE2966B88FF32C2552F60C /* PlacementController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlacementController.swift; sourceTree = "<group>"; };
 		5EC0155F0EA46037C2494D29 /* SplatVision.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = SplatVision.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		61F39BEDD4C7A7392ABD1968 /* SceneTransformsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneTransformsTests.swift; sourceTree = "<group>"; };
+		66218090044EA55A17A3383F /* MockSplatService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockSplatService.swift; sourceTree = "<group>"; };
 		6B7CDC60F5BD3E9938487091 /* ContentStageConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentStageConfiguration.swift; sourceTree = "<group>"; };
 		6C77F3E7E31E15E813224C50 /* SplatVisionApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplatVisionApp.swift; sourceTree = "<group>"; };
-		8EFD535AB3C5E05CF2372211 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
+		80277395EC9B5B072BD252F3 /* MockServerIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockServerIntegrationTests.swift; sourceTree = "<group>"; };
+		829B65C00BB8ED43B0E430DE /* HistorySection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistorySection.swift; sourceTree = "<group>"; };
+		9A83489D52C1EF4B63C15CD4 /* ImmersiveSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImmersiveSection.swift; sourceTree = "<group>"; };
+		9FBF05A9C2971CA0142D9144 /* ImmersiveControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImmersiveControllerTests.swift; sourceTree = "<group>"; };
 		A727540068DE4F6B63FAACFA /* SplatRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplatRequest.swift; sourceTree = "<group>"; };
+		B03470B2004968E88F8866E4 /* ServerSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerSettings.swift; sourceTree = "<group>"; };
+		B296A9AE6709A41A2A82C3D2 /* HTTPSplatService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPSplatService.swift; sourceTree = "<group>"; };
+		B81DB372E87AE30EC0DCE968 /* StubURLProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StubURLProtocol.swift; sourceTree = "<group>"; };
 		B99F2C956966A9C9C09D4767 /* HeadPoseResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadPoseResolverTests.swift; sourceTree = "<group>"; };
+		BA24DC0AD289BE018F3B71E4 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		BCD1744D634C51E0F923126D /* PlacementControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlacementControllerTests.swift; sourceTree = "<group>"; };
 		C4B5D2E2EFC60EA64D7FFDA1 /* SplatSceneRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplatSceneRenderer.swift; sourceTree = "<group>"; };
 		CD2724A3C4DCF55F0BB11747 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		D2130A39E77A8E6661BE307F /* HTTPSplatServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPSplatServiceTests.swift; sourceTree = "<group>"; };
+		DC24ECA823BFA50449450367 /* HistoryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryStore.swift; sourceTree = "<group>"; };
+		DF6BE5A34DD72D9D83FF7D04 /* GenerateSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenerateSection.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,10 +116,16 @@
 		34AA95811EF1BCD436DB73D2 /* SplatVisionTests */ = {
 			isa = PBXGroup;
 			children = (
+				290652F0A47E5C0E30ACBB3A /* GenerationControllerTests.swift */,
 				B99F2C956966A9C9C09D4767 /* HeadPoseResolverTests.swift */,
+				1F3D64C9C7A3DB4324F49B49 /* HistoryStoreTests.swift */,
+				D2130A39E77A8E6661BE307F /* HTTPSplatServiceTests.swift */,
+				9FBF05A9C2971CA0142D9144 /* ImmersiveControllerTests.swift */,
 				38B7DAC555DD65D85C5FF433 /* MockPLYTests.swift */,
+				80277395EC9B5B072BD252F3 /* MockServerIntegrationTests.swift */,
 				BCD1744D634C51E0F923126D /* PlacementControllerTests.swift */,
 				61F39BEDD4C7A7392ABD1968 /* SceneTransformsTests.swift */,
+				B81DB372E87AE30EC0DCE968 /* StubURLProtocol.swift */,
 				20D78D6AF04A2885E5CD246B /* TestHelpers.swift */,
 			);
 			path = SplatVisionTests;
@@ -97,6 +135,8 @@
 			isa = PBXGroup;
 			children = (
 				BB9BCD48BF8D4CC1901A2C62 /* App */,
+				C0FE041CB187311D47F6C28F /* History */,
+				B836F6B5CA9EDA6967C4C3F1 /* Networking */,
 				70D0B8E989FBB12103AEBC5B /* Rendering */,
 				BB999EE50DD8FF634968E1DB /* Resources */,
 				6F20718276945B542C4A52C7 /* Views */,
@@ -108,6 +148,10 @@
 			isa = PBXGroup;
 			children = (
 				CD2724A3C4DCF55F0BB11747 /* ContentView.swift */,
+				DF6BE5A34DD72D9D83FF7D04 /* GenerateSection.swift */,
+				829B65C00BB8ED43B0E430DE /* HistorySection.swift */,
+				9A83489D52C1EF4B63C15CD4 /* ImmersiveSection.swift */,
+				BA24DC0AD289BE018F3B71E4 /* SettingsView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -126,6 +170,17 @@
 			path = Rendering;
 			sourceTree = "<group>";
 		};
+		B836F6B5CA9EDA6967C4C3F1 /* Networking */ = {
+			isa = PBXGroup;
+			children = (
+				B296A9AE6709A41A2A82C3D2 /* HTTPSplatService.swift */,
+				66218090044EA55A17A3383F /* MockSplatService.swift */,
+				B03470B2004968E88F8866E4 /* ServerSettings.swift */,
+				0A8FDAD5F9DCE232377FA7B6 /* SplatService.swift */,
+			);
+			path = Networking;
+			sourceTree = "<group>";
+		};
 		BB999EE50DD8FF634968E1DB /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -137,11 +192,20 @@
 		BB9BCD48BF8D4CC1901A2C62 /* App */ = {
 			isa = PBXGroup;
 			children = (
-				8EFD535AB3C5E05CF2372211 /* AppModel.swift */,
+				4C03153FB4057F390AB0C692 /* GenerationController.swift */,
+				0BD0F7FE03FCC44881EDB514 /* ImmersiveController.swift */,
 				A727540068DE4F6B63FAACFA /* SplatRequest.swift */,
 				6C77F3E7E31E15E813224C50 /* SplatVisionApp.swift */,
 			);
 			path = App;
+			sourceTree = "<group>";
+		};
+		C0FE041CB187311D47F6C28F /* History */ = {
+			isa = PBXGroup;
+			children = (
+				DC24ECA823BFA50449450367 /* HistoryStore.swift */,
+			);
+			path = History;
 			sourceTree = "<group>";
 		};
 		CBC82AB4F556A99382777A4B = {
@@ -260,10 +324,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				95D89EBEA1572511F13D5155 /* GenerationControllerTests.swift in Sources */,
+				01A415DFEB4F2E45833E296F /* HTTPSplatServiceTests.swift in Sources */,
 				029EBFD6C17B388B07D2E0F6 /* HeadPoseResolverTests.swift in Sources */,
+				716CEAD3A8009ED5F11E5A45 /* HistoryStoreTests.swift in Sources */,
+				F155ED7766CB0AD356ACA8F5 /* ImmersiveControllerTests.swift in Sources */,
 				20A4B259373EB5BE6D34893C /* MockPLYTests.swift in Sources */,
+				F972765B06FBFE466F80FAAE /* MockServerIntegrationTests.swift in Sources */,
 				FE9B6A2AAAE278729B2B9234 /* PlacementControllerTests.swift in Sources */,
 				4EF87593230B0EAF0EB06C86 /* SceneTransformsTests.swift in Sources */,
+				62CD8981FAEDA07DC8854F8F /* StubURLProtocol.swift in Sources */,
 				AB92C76A033A784D3CD06DC6 /* TestHelpers.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -272,16 +342,26 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FEE033A1BF528CC763C68AF1 /* AppModel.swift in Sources */,
 				7C278246B9DB8EC456C8EAC6 /* ContentStageConfiguration.swift in Sources */,
 				761C39B5FDEE8E28F24B5441 /* ContentView.swift in Sources */,
+				2483CD1C36937960320F3644 /* GenerateSection.swift in Sources */,
+				22CCBEE450B3EDF09D993898 /* GenerationController.swift in Sources */,
+				FA767B31C6A5EC1BBF853FC3 /* HTTPSplatService.swift in Sources */,
 				7AF67B0ACD3BB2342C53DF7C /* HeadPoseResolver.swift in Sources */,
+				41829D696EE2A615E666BDB0 /* HistorySection.swift in Sources */,
+				27B1EA3C486B55E387D25C20 /* HistoryStore.swift in Sources */,
+				1C9FBC8B67A85BBC4EC91A8A /* ImmersiveController.swift in Sources */,
+				6B69E104661AC2928170BB85 /* ImmersiveSection.swift in Sources */,
+				6119B8A3F568E4EDD57CADE8 /* MockSplatService.swift in Sources */,
 				3D7AFC98C6C03705EE9F549B /* PlacementController.swift in Sources */,
 				5EB907A6E751F32B9A070780 /* RendererTaskExecutor.swift in Sources */,
 				B7CB2475FFAD508E395C6888 /* SceneTransforms.swift in Sources */,
+				3C2BDD5D1255E9DCF3E78C68 /* ServerSettings.swift in Sources */,
+				D74996115B738D807C17B71F /* SettingsView.swift in Sources */,
 				24F1D91C5DAFC4A61629289E /* SplatLoader.swift in Sources */,
 				4A06D4B5D17890BF99F41A25 /* SplatRequest.swift in Sources */,
 				046F148BF5E52C50E5A4155B /* SplatSceneRenderer.swift in Sources */,
+				8C972A656951C58E51357B5F /* SplatService.swift in Sources */,
 				F04EAFEC297AB8184E722A38 /* SplatVisionApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

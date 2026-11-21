@@ -36,6 +36,10 @@ targets:
         CFBundleDisplayName: Splat Vision
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        # Allow plain-HTTP to the LAN splat-server (local IPs / .local / unqualified hosts only; no arbitrary loads).
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
+        NSLocalNetworkUsageDescription: 連線到同一個區網內的 splat server，用照片生成 3D 場景。
         UIApplicationSceneManifest:
           UIApplicationPreferredDefaultSceneSessionRole: UIWindowSceneSessionRoleApplication
           UIApplicationSupportsMultipleScenes: true

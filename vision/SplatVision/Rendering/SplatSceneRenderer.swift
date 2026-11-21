@@ -73,15 +73,15 @@ final class SplatSceneRenderer: @unchecked Sendable {
     }
 
     /// Entry point from the `CompositorLayer` closure.
-    static func start(_ layerRenderer: LayerRenderer, request: SplatRequest?, appModel: AppModel) {
+    static func start(_ layerRenderer: LayerRenderer, request: SplatRequest?, immersive: ImmersiveController) {
         let (stream, continuation) = AsyncStream.makeStream(of: RendererEvent.self)
         let renderer = SplatSceneRenderer(layerRenderer, request: request, events: continuation)
 
         if let requestID = request?.id {
             Task { @MainActor in
-                appModel.attach(renderer, requestID: requestID)
+                immersive.attach(renderer, requestID: requestID)
                 for await event in stream {
-                    appModel.handle(event, requestID: requestID)
+                    immersive.handle(event, requestID: requestID)
                 }
             }
         } else {
