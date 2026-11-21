@@ -47,8 +47,23 @@ struct ImmersiveSection: View {
             if let error = immersive.lastOpenError {
                 Label(error, systemImage: "exclamationmark.triangle").foregroundStyle(.red)
             }
+            if immersive.state != .closed {
+                PerformanceView(stats: immersive.renderStats)
+            }
         }
         .font(.callout)
+    }
+
+    private func loadDetail(_ report: LoadReport) -> String {
+        var parts = ["解析 \(Format.seconds(report.parseSeconds))", "加入 \(Format.seconds(report.addChunkSeconds))"]
+        if let first = report.firstSortSeconds { parts.append("首次排序完成 \(Format.seconds(first))") }
+        parts.append(report.usedFastPath ? "快速讀檔" : "SplatIO")
+        var dropped: [String] = []
+        if report.invalid > 0 { dropped.append("無效 \(report.invalid.formatted())") }
+        if report.droppedTransparent > 0 { dropped.append("透明 \(report.droppedTransparent.formatted())") }
+        if report.droppedByBudget > 0 { dropped.append("抽樣 \(report.droppedByBudget.formatted())") }
+        if !dropped.isEmpty { parts.append("略過：" + dropped.joined(separator: "、")) }
+        return parts.joined(separator: "｜")
     }
 
     /// History entries are shown by their image URL rather than the server's UUID.
@@ -66,8 +81,14 @@ struct ImmersiveSection: View {
             EmptyView()
         case .loading:
             Label("讀取 splat 中…", systemImage: "hourglass")
-        case let .loaded(count, seconds):
-            Label("已載入 \(count.formatted()) 個 splat（\(Format.seconds(seconds))）", systemImage: "checkmark.circle")
+        case let .loaded(report):
+            VStack(alignment: .leading, spacing: 4) {
+                Label("已載入 \(report.splatCount.formatted()) 個 splat", systemImage: "checkmark.circle")
+                Text(loadDetail(report))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .monospacedDigit()
+            }
         case let .failed(message):
             Label(message, systemImage: "exclamationmark.triangle").foregroundStyle(.red)
         }
@@ -83,5 +104,39 @@ struct ImmersiveSection: View {
         case let .simulated(reason):
             Label("使用模擬視角：\(reason)", systemImage: "eye.slash").foregroundStyle(.orange)
         }
+    }
+}
+
+/// Render numbers from the renderer plus app memory, refreshed every second.
+private struct PerformanceView: View {
+    let stats: RenderStats?
+
+    var body: some View {
+        TimelineView(.periodic(from: .now, by: 1)) { _ in
+            VStack(alignment: .leading, spacing: 2) {
+                if let stats {
+                    Text("提交 \(stats.submittedFPS.formatted(.number.precision(.fractionLength(0)))) 幀/秒"
+                         + "｜GPU 平均 \(ms(stats.gpuMillisAverage))・最大 \(ms(stats.gpuMillisMax))"
+                         + "｜跳過 \(stats.skippedFrames)"
+                         + (stats.lastSortMillis.map { "｜排序 \(ms($0))" } ?? ""))
+                }
+                Text(memoryText)
+            }
+            .font(.caption)
+            .monospacedDigit()
+            .foregroundStyle(.secondary)
+        }
+    }
+
+    private func ms(_ value: Double) -> String {
+        value.formatted(.number.precision(.fractionLength(1))) + " ms"
+    }
+
+    private var memoryText: String {
+        let used = MemoryStats.physFootprint().map { Format.bytes(Int64($0)) } ?? "?"
+        let available = MemoryStats.available()
+        // os_proc_available_memory() returns 0 where it is not supported (e.g. the simulator).
+        let availableText = available > 0 ? Format.bytes(Int64(available)) : "—（模擬器不提供）"
+        return "記憶體 \(used)｜還可用 \(availableText)"
     }
 }

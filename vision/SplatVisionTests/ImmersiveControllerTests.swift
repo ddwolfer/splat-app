@@ -22,7 +22,7 @@ private final class FakeSpace {
             Task { @MainActor in
                 controller.handle(.loading, requestID: request.id)
                 try? await Task.sleep(for: loadTime)
-                controller.handle(.loaded(splatCount: 1, seconds: 0.1), requestID: request.id)
+                controller.handle(.loaded(LoadReport(splatCount: 1)), requestID: request.id)
             }
             return .opened
         }, dismiss: { [unowned self] in
@@ -118,5 +118,27 @@ struct ImmersiveControllerTests {
         #expect(!ran)
         #expect((try? outcome.get()) == nil)
         #expect(space.opened == [a])
+    }
+
+    @Test(arguments: [true, false])
+    func firstSortIsKeptWhicheverEventArrivesFirst(sortFirst: Bool) async throws {
+        let controller = ImmersiveController()
+        controller.configure(open: { _ in .opened }, dismiss: {})
+        controller.show(a)
+        let deadline = ContinuousClock.now + .seconds(2)
+        while controller.isTransitioning, ContinuousClock.now < deadline { try? await Task.sleep(for: .milliseconds(10)) }
+        let id = try #require(controller.currentRequest?.id)
+        if sortFirst {
+            controller.handle(.firstSortCompleted(seconds: 0.7), requestID: id)
+            controller.handle(.loaded(LoadReport(splatCount: 10)), requestID: id)
+        } else {
+            controller.handle(.loaded(LoadReport(splatCount: 10)), requestID: id)
+            controller.handle(.firstSortCompleted(seconds: 0.7), requestID: id)
+        }
+        guard case let .loaded(report) = controller.loadState else {
+            Issue.record("expected loaded, got \(controller.loadState)")
+            return
+        }
+        #expect(report.firstSortSeconds == 0.7)
     }
 }

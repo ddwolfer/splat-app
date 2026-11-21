@@ -47,9 +47,12 @@ enum SplatSourceError: LocalizedError {
 struct SplatRequest: Codable, Hashable, Sendable, Identifiable {
     let id: UUID
     let source: SplatSource
+    /// Keep at most this many splats (nil = all); see Settings > 顯示品質.
+    let maxSplats: Int?
 
-    init(source: SplatSource, id: UUID = UUID()) {
+    init(source: SplatSource, maxSplats: Int? = nil, id: UUID = UUID()) {
         self.id = id
         self.source = source
+        self.maxSplats = maxSplats
     }
 }

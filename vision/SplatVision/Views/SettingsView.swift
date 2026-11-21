@@ -41,6 +41,18 @@ struct SettingsView: View {
                 }
 
                 Section {
+                    Picker("最多顯示", selection: $settings.splatBudget) {
+                        ForEach(SettingsStore.splatBudgetOptions, id: \.value) { option in
+                            Text(option.label).tag(option.value)
+                        }
+                    }
+                } header: {
+                    Text("顯示品質")
+                } footer: {
+                    Text("超過上限時先略過幾乎透明的點，再均勻抽樣。第一代 Vision Pro 若不順，可調低。下次開啟 splat 時生效。")
+                }
+
+                Section {
                     Toggle("Mock 模式（不連網路）", isOn: $settings.useMock)
                 } footer: {
                     Text("開啟時「生成」不會連 server，等一下後回傳 App 內建的範例 splat，用來測試操作流程。")

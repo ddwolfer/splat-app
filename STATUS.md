@@ -18,6 +18,7 @@
 - [x] V1 UI + API client
   - 網址生成、進度與耗時、歷史（最多 10 筆，存在 App 內）、設定頁（Base URL／Mock 模式）、ATS 區網例外；本機 `vision/tools/mock_server.py` 照 API.md 模擬 server；模擬器 52 個測試全過（含 63MB／118 萬點的區網整合測試）
 - [ ] V2 接上真實 server 並修正座標
+  - A 段（不需要 server）完成：SHARP 快速讀檔器（可取消）、效能量測、顯示品質上限；B 段等 M3
 - [ ] V3 照片上傳
 - [ ] V4 安裝到實機
 

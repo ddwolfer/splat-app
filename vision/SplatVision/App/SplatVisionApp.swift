@@ -15,6 +15,7 @@ final class AppModel {
         history = HistoryStore(rootDirectory: HistoryStore.defaultRootDirectory())
         immersive = ImmersiveController()
         generation = GenerationController(settings: settings, history: history, immersive: immersive)
+        immersive.maxSplatsProvider = { [settings] in settings.maxSplats }
         history.load()
     }
 }

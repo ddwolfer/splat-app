@@ -59,7 +59,13 @@ final class SettingsStore {
     enum Keys {
         static let baseURL = "serverBaseURL"
         static let useMock = "useMockService"
+        static let splatBudget = "splatBudget"
     }
+
+    /// Settings > 顯示品質 choices (0 = all splats).
+    static let splatBudgetOptions: [(value: Int, label: String)] = [
+        (0, "全部（約 118 萬）"), (800_000, "80 萬"), (500_000, "50 萬"), (300_000, "30 萬"),
+    ]
 
     @ObservationIgnored private let defaults: UserDefaults
 
@@ -68,12 +74,19 @@ final class SettingsStore {
     var useMock: Bool {
         didSet { defaults.set(useMock, forKey: Keys.useMock) }
     }
+    /// Max splats to keep when loading (0 = all). Applies the next time a splat is opened.
+    var splatBudget: Int {
+        didSet { defaults.set(splatBudget, forKey: Keys.splatBudget) }
+    }
+
+    var maxSplats: Int? { splatBudget > 0 ? splatBudget : nil }
 
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
         defaults.register(defaults: [Keys.useMock: true])
         baseURLString = defaults.string(forKey: Keys.baseURL) ?? ""
         useMock = defaults.bool(forKey: Keys.useMock)
+        splatBudget = defaults.integer(forKey: Keys.splatBudget)
     }
 
     /// Validates and saves; turns Mock mode off once a real server is configured.

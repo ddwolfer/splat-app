@@ -50,6 +50,7 @@ final class SplatSceneRenderer: @unchecked Sendable {
         var isShutDown = false
     }
     private let shared = Mutex(Shared())
+    private let stats = StatsBox()
 
     // Render-thread-only state.
     private var renderThreadTrackingRunning = false
@@ -101,19 +102,40 @@ final class SplatSceneRenderer: @unchecked Sendable {
     // MARK: - Loading
 
     private func startLoading() {
-        guard let source = request?.source else { return }
+        guard let request else { return }
         let task = Task.detached(priority: .userInitiated) { [self] in
-            await self.load(source)
+            await self.load(request.source, maxSplats: request.maxSplats)
         }
         shared.withLock { $0.loadTask = task }
     }
 
-    private func load(_ source: SplatSource) async {
+    private func load(_ source: SplatSource, maxSplats: Int?) async {
         events.yield(.loading)
         let start = Date()
+        var report = LoadReport()
         do {
             let url = try source.resolveURL()
-            let points = try await SplatLoader.loadPoints(from: url)
+
+            // SHARP PLYs take the fast, cancellable path; anything else goes through SplatIO.
+            let chunk: SplatChunk
+            if url.pathExtension.lowercased() == "ply",
+               let (fastChunk, loadStats) = try SharpPLYLoader.load(url: url, device: device, maxSplats: maxSplats) {
+                chunk = fastChunk
+                report.usedFastPath = true
+                report.pointsInFile = loadStats.pointsInFile
+                report.invalid = loadStats.invalid
+                report.droppedTransparent = loadStats.droppedTransparent
+                report.droppedByBudget = loadStats.droppedByBudget
+            } else {
+                let points = try await SplatLoader.loadPoints(from: url)
+                try Task.checkCancellation()
+                let budgeted = SplatLoader.applyBudget(points, maxSplats: maxSplats)
+                chunk = try SplatChunk(device: device, from: budgeted.points)
+                report.pointsInFile = points.count
+                report.droppedTransparent = budgeted.transparent
+                report.droppedByBudget = budgeted.sampled
+            }
+            report.parseSeconds = Date().timeIntervalSince(start)
             try Task.checkCancellation()
 
             let splatRenderer = try SplatRenderer(device: device,
@@ -122,8 +144,19 @@ final class SplatSceneRenderer: @unchecked Sendable {
                                                   sampleCount: 1,
                                                   maxViewCount: maxViewCount,
                                                   maxSimultaneousRenders: Self.maxSimultaneousRenders)
-            let chunk = try SplatChunk(device: device, from: points)
+            let statsBox = stats
+            splatRenderer.onSortComplete = { duration in
+                statsBox.mutex.withLock { $0.lastSortSeconds = duration }
+            }
+            // Registered before adding the chunk, so it fires on the first sort that includes it.
+            let events = self.events
+            splatRenderer.afterNextSort {
+                events.yield(.firstSortCompleted(seconds: Date().timeIntervalSince(start)))
+            }
+            let addStart = Date()
             await splatRenderer.addChunk(chunk)
+            report.addChunkSeconds = Date().timeIntervalSince(addStart)
+            report.splatCount = chunk.splatCount
 
             // Publish only if the session is still alive. Otherwise release the chunks right away:
             // MetalSplatter's sorter loop keeps itself and its buffers alive while it has chunks.
@@ -136,7 +169,8 @@ final class SplatSceneRenderer: @unchecked Sendable {
                 await splatRenderer.removeAllChunks()
                 return
             }
-            events.yield(.loaded(splatCount: points.count, seconds: Date().timeIntervalSince(start)))
+            Self.log.info("Loaded \(report.splatCount) splats (fast path: \(report.usedFastPath)) parse \(report.parseSeconds)s add \(report.addChunkSeconds)s")
+            events.yield(.loaded(report))
         } catch is CancellationError {
             // Session closed while loading; nothing to report.
         } catch {
@@ -232,6 +266,7 @@ final class SplatSceneRenderer: @unchecked Sendable {
         let placement = pose.flatMap { renderThreadPlacement.update(with: $0) }
         let splatRenderer = shared.withLock { $0.splatRenderer }
 
+        defer { reportStatsIfDue() }
         guard let pose, let placement, let splatRenderer else {
             presentCleared(frame: frame, drawables: drawables, deviceAnchor: deviceAnchor)
             return
@@ -243,16 +278,21 @@ final class SplatSceneRenderer: @unchecked Sendable {
         frame.startSubmission()
 
         let model = SceneTransforms.modelMatrix(placement: placement)
+        var frameHadSkip = false
         for (index, drawable) in drawables.enumerated() {
             guard let commandBuffer = commandQueue.makeCommandBuffer() else {
                 fatalError("Failed to create command buffer")
             }
             drawable.deviceAnchor = deviceAnchor
 
-            // Release the in-flight slot when the last drawable's work completes.
-            if index == drawables.count - 1 {
-                let semaphore = inFlightSemaphore
-                commandBuffer.addCompletedHandler { _ in semaphore.signal() }
+            // Release the in-flight slot when the last drawable's work completes; record GPU time.
+            let statsBox = stats
+            let isLast = index == drawables.count - 1
+            let semaphore = inFlightSemaphore
+            commandBuffer.addCompletedHandler { buffer in
+                let gpuSeconds = buffer.gpuEndTime - buffer.gpuStartTime
+                statsBox.mutex.withLock { $0.recordGPU(seconds: gpuSeconds) }
+                if isLast { semaphore.signal() }
             }
 
             let viewports = drawable.views.enumerated().map { viewIndex, view in
@@ -281,12 +321,18 @@ final class SplatSceneRenderer: @unchecked Sendable {
                 // Skipped (e.g. no sorted index buffer yet) or failed: never present undefined contents.
                 encodeClear(drawable, into: commandBuffer)
             }
+            if !rendered { frameHadSkip = true }
 
             drawable.encodePresent(commandBuffer: commandBuffer)
             commandBuffer.commit()
         }
 
         frame.endSubmission()
+        // Counted per frame (a frame may have several drawables): "skipped" if any drawable was not drawn.
+        stats.mutex.withLock {
+            $0.submitted += 1
+            if frameHadSkip { $0.skipped += 1 } else { $0.rendered += 1 }
+        }
     }
 
     /// Completes the frame lifecycle without a splat (still loading / waiting for tracking), clearing the
@@ -305,6 +351,7 @@ final class SplatSceneRenderer: @unchecked Sendable {
             commandBuffer.commit()
         }
         frame.endSubmission()
+        stats.mutex.withLock { $0.submitted += 1 }
     }
 
     /// Clears a drawable's colour (transparent) and depth.
@@ -323,10 +370,22 @@ final class SplatSceneRenderer: @unchecked Sendable {
         commandBuffer.makeRenderCommandEncoder(descriptor: pass)?.endEncoding()
     }
 
+    private func reportStatsIfDue() {
+        let now = CACurrentMediaTime()
+        if let snapshot = stats.mutex.withLock({ $0.flushIfDue(now: now) }) {
+            events.yield(.stats(snapshot))
+        }
+    }
+
     private func reportTrackingStatusIfChanged() {
         let status = renderThreadHeadResolver.status
         guard status != renderThreadReportedStatus else { return }
         renderThreadReportedStatus = status
         events.yield(.tracking(status))
     }
+}
+
+/// Reference wrapper so GPU completion handlers and MetalSplatter callbacks can share the accumulator.
+private final class StatsBox: Sendable {
+    let mutex = Mutex(RenderStatsAccumulator())
 }

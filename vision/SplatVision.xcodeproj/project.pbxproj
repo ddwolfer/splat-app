@@ -11,6 +11,7 @@
 		029EBFD6C17B388B07D2E0F6 /* HeadPoseResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99F2C956966A9C9C09D4767 /* HeadPoseResolverTests.swift */; };
 		046F148BF5E52C50E5A4155B /* SplatSceneRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B5D2E2EFC60EA64D7FFDA1 /* SplatSceneRenderer.swift */; };
 		05CD5B499ECE1DC7DA80D8FF /* SplatIO in Frameworks */ = {isa = PBXBuildFile; productRef = 13C065B6D840477E014D74E8 /* SplatIO */; };
+		06B5B2403F1B71ED2480894E /* SplatDiagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = D082A06F2FD73DF9773D5B9A /* SplatDiagnostics.swift */; };
 		1C9FBC8B67A85BBC4EC91A8A /* ImmersiveController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BD0F7FE03FCC44881EDB514 /* ImmersiveController.swift */; };
 		20A4B259373EB5BE6D34893C /* MockPLYTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38B7DAC555DD65D85C5FF433 /* MockPLYTests.swift */; };
 		22CCBEE450B3EDF09D993898 /* GenerationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C03153FB4057F390AB0C692 /* GenerationController.swift */; };
@@ -22,6 +23,7 @@
 		41829D696EE2A615E666BDB0 /* HistorySection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 829B65C00BB8ED43B0E430DE /* HistorySection.swift */; };
 		4A06D4B5D17890BF99F41A25 /* SplatRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A727540068DE4F6B63FAACFA /* SplatRequest.swift */; };
 		4EF87593230B0EAF0EB06C86 /* SceneTransformsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61F39BEDD4C7A7392ABD1968 /* SceneTransformsTests.swift */; };
+		56E80C2D346B7FC9A50D8F45 /* SharpPLYLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCEBDB1C8AB85D22841E9145 /* SharpPLYLoader.swift */; };
 		5EB907A6E751F32B9A070780 /* RendererTaskExecutor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 314DF6A1F8A0FC35C48F984E /* RendererTaskExecutor.swift */; };
 		6119B8A3F568E4EDD57CADE8 /* MockSplatService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66218090044EA55A17A3383F /* MockSplatService.swift */; };
 		62CD8981FAEDA07DC8854F8F /* StubURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B81DB372E87AE30EC0DCE968 /* StubURLProtocol.swift */; };
@@ -32,8 +34,10 @@
 		7C278246B9DB8EC456C8EAC6 /* ContentStageConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B7CDC60F5BD3E9938487091 /* ContentStageConfiguration.swift */; };
 		8C972A656951C58E51357B5F /* SplatService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8FDAD5F9DCE232377FA7B6 /* SplatService.swift */; };
 		95D89EBEA1572511F13D5155 /* GenerationControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 290652F0A47E5C0E30ACBB3A /* GenerationControllerTests.swift */; };
+		9BA90BBF494A142759412312 /* SharpPLYLoaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12A8C9B7132B33E56638C3E2 /* SharpPLYLoaderTests.swift */; };
 		AB92C76A033A784D3CD06DC6 /* TestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20D78D6AF04A2885E5CD246B /* TestHelpers.swift */; };
 		B7CB2475FFAD508E395C6888 /* SceneTransforms.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E01A29F4509BEA7895D23DA /* SceneTransforms.swift */; };
+		C13F7956E7A6EBF26CF56CB2 /* RenderMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8F466C87D54BB2CDBBB21C /* RenderMetrics.swift */; };
 		D74996115B738D807C17B71F /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA24DC0AD289BE018F3B71E4 /* SettingsView.swift */; };
 		EC45C87CB78451D3DC890D88 /* MetalSplatter in Frameworks */ = {isa = PBXBuildFile; productRef = 40809E0C5870BE18C62BF177 /* MetalSplatter */; };
 		F04EAFEC297AB8184E722A38 /* SplatVisionApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C77F3E7E31E15E813224C50 /* SplatVisionApp.swift */; };
@@ -57,6 +61,8 @@
 		053DBE7C86EEB39824728E5C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		0A8FDAD5F9DCE232377FA7B6 /* SplatService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplatService.swift; sourceTree = "<group>"; };
 		0BD0F7FE03FCC44881EDB514 /* ImmersiveController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImmersiveController.swift; sourceTree = "<group>"; };
+		0E8F466C87D54BB2CDBBB21C /* RenderMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderMetrics.swift; sourceTree = "<group>"; };
+		12A8C9B7132B33E56638C3E2 /* SharpPLYLoaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharpPLYLoaderTests.swift; sourceTree = "<group>"; };
 		1F3D64C9C7A3DB4324F49B49 /* HistoryStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryStoreTests.swift; sourceTree = "<group>"; };
 		1FE6785EABE027D0EE96DCD6 /* SplatVisionTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = SplatVisionTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		20D78D6AF04A2885E5CD246B /* TestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestHelpers.swift; sourceTree = "<group>"; };
@@ -86,8 +92,10 @@
 		BCD1744D634C51E0F923126D /* PlacementControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlacementControllerTests.swift; sourceTree = "<group>"; };
 		C4B5D2E2EFC60EA64D7FFDA1 /* SplatSceneRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplatSceneRenderer.swift; sourceTree = "<group>"; };
 		CD2724A3C4DCF55F0BB11747 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		D082A06F2FD73DF9773D5B9A /* SplatDiagnostics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplatDiagnostics.swift; sourceTree = "<group>"; };
 		D2130A39E77A8E6661BE307F /* HTTPSplatServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPSplatServiceTests.swift; sourceTree = "<group>"; };
 		DC24ECA823BFA50449450367 /* HistoryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryStore.swift; sourceTree = "<group>"; };
+		DCEBDB1C8AB85D22841E9145 /* SharpPLYLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharpPLYLoader.swift; sourceTree = "<group>"; };
 		DF6BE5A34DD72D9D83FF7D04 /* GenerateSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenerateSection.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -125,6 +133,7 @@
 				80277395EC9B5B072BD252F3 /* MockServerIntegrationTests.swift */,
 				BCD1744D634C51E0F923126D /* PlacementControllerTests.swift */,
 				61F39BEDD4C7A7392ABD1968 /* SceneTransformsTests.swift */,
+				12A8C9B7132B33E56638C3E2 /* SharpPLYLoaderTests.swift */,
 				B81DB372E87AE30EC0DCE968 /* StubURLProtocol.swift */,
 				20D78D6AF04A2885E5CD246B /* TestHelpers.swift */,
 			);
@@ -163,7 +172,10 @@
 				45AD1A879E69C591D9071871 /* HeadPoseResolver.swift */,
 				53EE2966B88FF32C2552F60C /* PlacementController.swift */,
 				314DF6A1F8A0FC35C48F984E /* RendererTaskExecutor.swift */,
+				0E8F466C87D54BB2CDBBB21C /* RenderMetrics.swift */,
 				4E01A29F4509BEA7895D23DA /* SceneTransforms.swift */,
+				DCEBDB1C8AB85D22841E9145 /* SharpPLYLoader.swift */,
+				D082A06F2FD73DF9773D5B9A /* SplatDiagnostics.swift */,
 				21A2028701B277D70DD32DDE /* SplatLoader.swift */,
 				C4B5D2E2EFC60EA64D7FFDA1 /* SplatSceneRenderer.swift */,
 			);
@@ -333,6 +345,7 @@
 				F972765B06FBFE466F80FAAE /* MockServerIntegrationTests.swift in Sources */,
 				FE9B6A2AAAE278729B2B9234 /* PlacementControllerTests.swift in Sources */,
 				4EF87593230B0EAF0EB06C86 /* SceneTransformsTests.swift in Sources */,
+				9BA90BBF494A142759412312 /* SharpPLYLoaderTests.swift in Sources */,
 				62CD8981FAEDA07DC8854F8F /* StubURLProtocol.swift in Sources */,
 				AB92C76A033A784D3CD06DC6 /* TestHelpers.swift in Sources */,
 			);
@@ -354,10 +367,13 @@
 				6B69E104661AC2928170BB85 /* ImmersiveSection.swift in Sources */,
 				6119B8A3F568E4EDD57CADE8 /* MockSplatService.swift in Sources */,
 				3D7AFC98C6C03705EE9F549B /* PlacementController.swift in Sources */,
+				C13F7956E7A6EBF26CF56CB2 /* RenderMetrics.swift in Sources */,
 				5EB907A6E751F32B9A070780 /* RendererTaskExecutor.swift in Sources */,
 				B7CB2475FFAD508E395C6888 /* SceneTransforms.swift in Sources */,
 				3C2BDD5D1255E9DCF3E78C68 /* ServerSettings.swift in Sources */,
 				D74996115B738D807C17B71F /* SettingsView.swift in Sources */,
+				56E80C2D346B7FC9A50D8F45 /* SharpPLYLoader.swift in Sources */,
+				06B5B2403F1B71ED2480894E /* SplatDiagnostics.swift in Sources */,
 				24F1D91C5DAFC4A61629289E /* SplatLoader.swift in Sources */,
 				4A06D4B5D17890BF99F41A25 /* SplatRequest.swift in Sources */,
 				046F148BF5E52C50E5A4155B /* SplatSceneRenderer.swift in Sources */,

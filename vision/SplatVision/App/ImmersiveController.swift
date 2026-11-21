@@ -5,9 +5,11 @@ import SwiftUI
 /// Events the immersive renderer reports back to the UI.
 enum RendererEvent: Sendable {
     case loading
-    case loaded(splatCount: Int, seconds: Double)
+    case loaded(LoadReport)
+    case firstSortCompleted(seconds: Double)
     case failed(message: String)
     case tracking(HeadPoseResolver.Status)
+    case stats(RenderStats)
     case closed
 }
 
@@ -26,7 +28,7 @@ final class ImmersiveController {
     enum LoadState: Equatable {
         case idle
         case loading
-        case loaded(splatCount: Int, seconds: Double)
+        case loaded(LoadReport)
         case failed(message: String)
     }
 
@@ -58,6 +60,9 @@ final class ImmersiveController {
     private(set) var state: State = .closed
     private(set) var loadState: LoadState = .idle
     private(set) var trackingStatus: HeadPoseResolver.Status?
+    private(set) var renderStats: RenderStats?
+    /// Splat budget for the next opened request (from Settings).
+    @ObservationIgnored var maxSplatsProvider: @MainActor () -> Int? = { nil }
     private(set) var currentRequest: SplatRequest?
     private(set) var lastOpenError: String?
     /// True while the queue is working (opening/closing/waiting for a load).
@@ -67,6 +72,8 @@ final class ImmersiveController {
 
     @ObservationIgnored private weak var renderer: SplatSceneRenderer?
     @ObservationIgnored private var rendererEverReported = false
+    /// `firstSortCompleted` can arrive before `.loaded`; keep it until the report comes.
+    @ObservationIgnored private var earlyFirstSortSeconds: Double?
     /// The space was dismissed but its renderer has not confirmed shutdown (resources may still be held).
     @ObservationIgnored private var resourcesPending = false
     @ObservationIgnored private var pending: Command?
@@ -153,8 +160,21 @@ final class ImmersiveController {
         switch event {
         case .loading:
             loadState = .loading
-        case let .loaded(count, seconds):
-            loadState = .loaded(splatCount: count, seconds: seconds)
+        case var .loaded(report):
+            if report.firstSortSeconds == nil, let early = earlyFirstSortSeconds {
+                report.firstSortSeconds = early
+            }
+            earlyFirstSortSeconds = nil
+            loadState = .loaded(report)
+        case let .firstSortCompleted(seconds):
+            if case var .loaded(report) = loadState {
+                report.firstSortSeconds = seconds
+                loadState = .loaded(report)
+            } else {
+                earlyFirstSortSeconds = seconds
+            }
+        case let .stats(stats):
+            renderStats = stats
         case let .failed(message):
             loadState = .failed(message: message)
         case let .tracking(status):
@@ -163,6 +183,7 @@ final class ImmersiveController {
             state = .closed
             resourcesPending = false
             renderer = nil
+            renderStats = nil
             if loadState == .loading { loadState = .idle }
         }
     }
@@ -246,10 +267,12 @@ final class ImmersiveController {
 
     private func open(_ source: SplatSource) async {
         guard let openSpace else { return }
-        let request = SplatRequest(source: source)
+        let request = SplatRequest(source: source, maxSplats: maxSplatsProvider())
         currentRequest = request
         loadState = .idle
         trackingStatus = nil
+        renderStats = nil
+        earlyFirstSortSeconds = nil
         lastOpenError = nil
         renderer = nil
         rendererEverReported = false
