@@ -7,9 +7,11 @@
   - RTX 4060 fp16：推論約 6 秒（fp32 約 15 秒且超出 VRAM）、峰值 VRAM 約 6.2GB；`.ply` 約 63MB／118 萬個 gaussian（詳見 `plans/server-M1.md`）
 - [x] M2 API（FastAPI 實作 API.md）
   - 單張約 9 秒（含存檔）；同時最多 3 個請求，超過回 503；啟動方式見 `server/CLAUDE.md`
-- [ ] M3 區網可連線
-  - 進行中：等使用者建立 Windows 防火牆規則（需要系統管理員權限，指令見 `server/CLAUDE.md`「區網（M3）」）
-  - 預定 Base URL：`http://192.168.0.32:8000`（**尚未開放，還連不到**；完成後會改成已驗證）
+- [x] M3 區網可連線
+  - **Base URL：`http://192.168.0.32:8000`**（IP 192.168.0.32，port 8000）
+  - 防火牆規則「splat-server 8000 (LAN)」已建立：只允許 192.168.0.0/24 經「乙太網路」連到 sharp env 的 python.exe（Private 設定檔）
+  - 已驗證（PC 端，經 192.168.0.32）：/health、上傳生成 9.4 秒、下載 63MB；跨機（Mac／Vision Pro）待 splat-vision 實測回報
+  - server 需手動啟動（`.\server\run_server.ps1 -Lan`），PC 關機或 server 停止時連不到；IP 由 DHCP 分配，若改變會更新這裡
 
 ## vision（splat-vision）
 

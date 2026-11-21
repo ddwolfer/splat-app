@@ -56,3 +56,9 @@ server 綁 `0.0.0.0:8000`，開 Windows 防火牆讓同一個區網的 Vision Pr
 5. 直接綁 LAN IP 比較單純 → **不採納**：DHCP 換 IP 時 server 會啟動失敗；改以防火牆 InterfaceAlias 限定入口，並建議在路由器設 DHCP 保留。
 6. 驗收要跨機成功＋受限入口失敗的證據 → **部分採納**：跨機成功由 vision 實測；VPN 被擋因沒有測試節點，記為未實測。
 7. /health 不代表完整流程 → **採納**：請 vision 做上傳 → 下載 → 比對大小的完整測試；無驗證的風險（區網裝置可占用 GPU、列出、下載、觸發淘汰）寫進 STATUS／API 說明。
+
+## 結果（2026-11-21）
+- 使用者以管理員建立規則「splat-server 8000 (LAN)」（Inbound／Allow／TCP 8000／Private／乙太網路／192.168.0.0/24／sharp python.exe），port 8000 上沒有其他規則。
+- `run_server.sh --lan` 啟動：監聽 `0.0.0.0:8000`，pid 對應 `C:\Users\91006\anaconda3\envs\sharp\python.exe`（與規則的 -Program 一致）；未跳出 Windows 允許存取視窗。
+- 經 `http://192.168.0.32:8000`：/health OK、上傳 teaser 生成 9.4 秒、下載 66,061,086 bytes；兩份範例 .ply 都可下載。
+- 待辦：splat-vision 從 Mac／Vision Pro 跨機實測（完整流程＋比對大小）；VPN 入口被擋未實測（依規則推論）。
