@@ -36,7 +36,7 @@ server 在模型載入完成後才開始接受連線，所以只要 `/health` �
 - **同步**：請求會等到生成完成才回應。單張約 9 秒（RTX 4060，fp16）；前面有排隊時最多約 30 秒。**client 逾時請設 ≥ 120 秒**。
 - **排隊**：同時最多 3 個請求（1 個生成中 + 2 個等待），超過立刻回 `503 {"error": "server busy, try again later"}`，請稍後重試。
 - **斷線**：client 斷線不會取消生成；完成後會出現在 `/list`。
-- **圖片限制**：檔案 ≤ 20MB、≤ 40MP；格式 JPEG／PNG／HEIC／WebP 等 Pillow 能解的格式；依 EXIF 轉正；長邊 > 2048 會先縮圖；透明區域以白色填底。
+- **圖片限制**：檔案 ≤ 20 MiB（20,971,520 bytes）、像素 ≤ 40,000,000（寬×高，以 EXIF 轉正前的尺寸計）；multipart 整個 body ≤ 20 MiB + 64 KiB；格式 JPEG／PNG／HEIC／WebP 等 Pillow 能解的格式；依 EXIF 轉正；長邊 > 2048 會先縮圖；透明區域以白色填底。
 - **焦距**：取自 EXIF（35mm 等效焦距，或 FocalLength），沒有就假設 30mm（與 ml-sharp 相同）。網路圖片常沒有 EXIF。
 - **`image_url` 限制**：只允許 http/https、公開網路位址（私有／區網／loopback 位址會被拒絕）；最多 3 次 redirect；下載總時限 20 秒。
 - **保留**：server 只保留最新 40 個 splat，舊的會被刪除（之後 `/splats/<id>.ply` 回 404）。
