@@ -10,7 +10,8 @@
 - [x] M3 區網可連線
   - **Base URL：`http://192.168.0.32:8000`**（IP 192.168.0.32，port 8000）
   - 防火牆規則「splat-server 8000 (LAN)」已建立：只允許 192.168.0.0/24 經「乙太網路」連到 sharp env 的 python.exe（Private 設定檔）
-  - 已驗證（PC 端，經 192.168.0.32）：/health、上傳生成 9.4 秒、下載 63MB；跨機（Mac／Vision Pro）待 splat-vision 實測回報
+  - 已驗證：PC 端經 192.168.0.32（/health、上傳生成 9.4 秒、下載 63MB）；**跨機（Mac → server）由 splat-vision 實測通過**（上傳 8.7 秒、下載 66,061,086 bytes 一致，見 NOTES.md 已解決 13:28）
+  - fp16 經 vision 視覺比對定案為預設（與 fp32 每像素平均差 0.76/255，肉眼看不出）
   - server 需手動啟動（`.\server\run_server.ps1 -Lan`），PC 關機或 server 停止時連不到；IP 由 DHCP 分配，若改變會更新這裡
 
 ## vision（splat-vision）

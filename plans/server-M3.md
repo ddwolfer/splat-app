@@ -62,3 +62,4 @@ server 綁 `0.0.0.0:8000`，開 Windows 防火牆讓同一個區網的 Vision Pr
 - `run_server.sh --lan` 啟動：監聽 `0.0.0.0:8000`，pid 對應 `C:\Users\91006\anaconda3\envs\sharp\python.exe`（與規則的 -Program 一致）；未跳出 Windows 允許存取視窗。
 - 經 `http://192.168.0.32:8000`：/health OK、上傳 teaser 生成 9.4 秒、下載 66,061,086 bytes；兩份範例 .ply 都可下載。
 - 待辦：splat-vision 從 Mac／Vision Pro 跨機實測（完整流程＋比對大小）；VPN 入口被擋未實測（依規則推論）。
+- 跨機驗證完成（splat-vision，Mac → 192.168.0.32:8000）：上傳 8.7 秒、下載 66,061,086 bytes 一致；App（模擬器）照片上傳與圖片網址兩條路徑都通過。

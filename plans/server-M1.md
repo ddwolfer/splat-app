@@ -94,3 +94,7 @@ fp32 的 allocator reserved 超過實體顯存，**推斷**是 Windows WDDM 的 
 4. warm-up 未分離 → **採納**：先跑一次 warm-up 單獨報告，再跑 N 次計算穩定值。
 5. VRAM 溢出是推論而非量測、smi 是快照 → **採納**：輸出改名 `smi-after`，文件改成「推斷」並說明依據。
 6. `--runs` 可為 0 → **採納**：argparse 限制 >= 1。
+
+## 後續（2026-11-21）
+
+- **fp16 定案**：splat-vision 在 MetalSplatter 以同一視角比對 fp32／fp16（NOTES.md 已解決 13:28）：每像素平均差 0.76/255、p99 7/255、>16/255 的像素僅 0.047%，肉眼看不出差異。維持 `DEFAULT_AMP = "fp16"`；V4 實機若在偏離角度看出問題，可用 `SHARP_AMP=none` 切回 fp32。
