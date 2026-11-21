@@ -1,10 +1,13 @@
 import SwiftUI
 
 struct ContentView: View {
+    @MainActor private static var launchHooksRan = false
+
     @Environment(ImmersiveController.self) private var immersive
     @Environment(GenerationController.self) private var generation
     @Environment(\.openImmersiveSpace) private var openImmersiveSpace
     @Environment(\.dismissImmersiveSpace) private var dismissImmersiveSpace
+    @Environment(\.dismissWindow) private var dismissWindow
     @State private var showingSettings = false
 
     var body: some View {
@@ -41,11 +44,25 @@ struct ContentView: View {
     }
 
     /// Dev/automation hooks (launch arguments), so the simulator can be driven and screenshotted
-    /// without clicking: `-autoOpenMock YES`, `-autoGenerateURL <url>`, `-showSettings YES`.
+    /// without clicking: `-autoOpenMock YES`, `-autoOpenFile <ply path>`, `-autoGenerateURL <url>`,
+    /// `-autoUploadPath <image path>`, `-showSettings YES`, `-hideWindow YES` (closes this window
+    /// a few seconds after opening a splat, for unobstructed screenshots).
     private func runLaunchHooks() {
+        // Once per process: reopening the main window must not re-run them (e.g. hide itself again).
+        guard !Self.launchHooksRan else { return }
+        Self.launchHooksRan = true
         let defaults = UserDefaults.standard
         if defaults.bool(forKey: "autoOpenMock") {
             immersive.show(.bundledMock)
+        }
+        if let path = defaults.string(forKey: "autoOpenFile"), !path.isEmpty {
+            immersive.show(.localFile(URL(fileURLWithPath: path)))
+        }
+        if defaults.bool(forKey: "hideWindow") {
+            Task {
+                try? await Task.sleep(for: .seconds(4))
+                if immersive.state == .open { dismissWindow(id: "main") }
+            }
         }
         if let url = defaults.string(forKey: "autoGenerateURL"), !url.isEmpty {
             generation.start(imageURLText: url)

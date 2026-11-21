@@ -36,7 +36,8 @@
   整合測試：`TEST_RUNNER_SPLAT_MOCK_SERVER=http://<Mac 區網 IP>:8765 xcodebuild test ...`（沒設就跳過）。
   用區網 IP 而不是 127.0.0.1，才會測到 ATS 的區網例外。
 - 模擬器相簿加照片：`xcrun simctl addmedia booted <圖片>`。
-- 其他啟動參數：`-autoGenerateURL <圖片網址>` 自動生成、`-autoUploadPath <Mac 上的圖片路徑>` 走照片上傳流程、
+- 其他啟動參數：`-autoOpenFile <PLY 路徑>` 直接開 Mac 上的 PLY、`-hideWindow YES` 開啟後收起主視窗（截圖用）、
+  `-autoGenerateURL <圖片網址>` 自動生成、`-autoUploadPath <Mac 上的圖片路徑>` 走照片上傳流程、
   `-showPhotoPicker YES` 開照片選擇器、`-showSettings YES` 開設定頁、`-splatBudget 300000` 顯示品質上限、
   `-serverBaseURL <url> -useMockService NO` 暫時指定 server（不寫入設定）。
 - App 的 Mock 模式（設定頁開關，預設開到第一次儲存 Base URL 為止）：不連網路，回傳內建範例。
