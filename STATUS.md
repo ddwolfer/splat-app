@@ -8,7 +8,8 @@
 - [x] M2 API（FastAPI 實作 API.md）
   - 單張約 9 秒（含存檔）；同時最多 3 個請求，超過回 503；啟動方式見 `server/CLAUDE.md`
 - [ ] M3 區網可連線
-  - Base URL：（待補，例：`http://192.168.x.x:8000`）
+  - 進行中：等使用者建立 Windows 防火牆規則（需要系統管理員權限，指令見 `server/CLAUDE.md`「區網（M3）」）
+  - 預定 Base URL：`http://192.168.0.32:8000`（**尚未開放，還連不到**；完成後會改成已驗證）
 
 ## vision（splat-vision）
 

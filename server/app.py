@@ -321,6 +321,15 @@ def main() -> None:
     ap.add_argument("--port", type=int, default=8000)
     args = ap.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
+    if args.host == "0.0.0.0":
+        import socket
+
+        try:
+            ips = sorted({ai[4][0] for ai in socket.getaddrinfo(socket.gethostname(), None, socket.AF_INET)})
+        except OSError:
+            ips = []
+        LOGGER.info("LAN mode: reachable at %s (firewall rule required; see STATUS.md)",
+                    ", ".join(f"http://{ip}:{args.port}" for ip in ips) or "<unknown IP>")
     # Single process, no reload: the model and the GPU lock live in this process.
     uvicorn.run(create_app(), host=args.host, port=args.port, workers=1, reload=False,
                 timeout_keep_alive=30)

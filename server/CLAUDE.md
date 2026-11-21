@@ -82,6 +82,21 @@ curl -s http://127.0.0.1:8000/list
 
 把離線產生的 .ply 交給 server 提供：`$PY server/scripts/register_ply.py <file.ply> --source "sample:..." --amp none`
 
+## 區網（M3）
+
+PC 區網 IP：192.168.0.32（網卡「乙太網路」，Private 設定檔；建議在路由器設 DHCP 保留）。
+防火牆規則（**系統管理員** PowerShell，只需執行一次）：
+
+```powershell
+New-NetFirewallRule -DisplayName "splat-server 8000 (LAN)" `
+  -Direction Inbound -Action Allow -Protocol TCP -LocalPort 8000 `
+  -Profile Private -InterfaceAlias "乙太網路" -RemoteAddress 192.168.0.0/24 `
+  -Program "C:\Users\91006\anaconda3\envs\sharp\python.exe"
+# 移除：Remove-NetFirewallRule -DisplayName "splat-server 8000 (LAN)"
+```
+
+規則寫死 port 8000 與 `envs\sharp\python.exe`；改 port 或換 Python 要另外加規則。先建規則再用 `-Lan` 啟動，避免 Windows 自動跳出較寬鬆的允許視窗。
+
 ## 注意事項
 
 - shell 有 PowerShell 與 Git Bash 兩種；指令範例請標明用哪一種。
