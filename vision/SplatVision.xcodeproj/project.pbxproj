@@ -66,6 +66,7 @@
 		0BD0F7FE03FCC44881EDB514 /* ImmersiveController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImmersiveController.swift; sourceTree = "<group>"; };
 		0E8F466C87D54BB2CDBBB21C /* RenderMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderMetrics.swift; sourceTree = "<group>"; };
 		12A8C9B7132B33E56638C3E2 /* SharpPLYLoaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharpPLYLoaderTests.swift; sourceTree = "<group>"; };
+		156F705060CE7BB28861CE09 /* Signing.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Signing.xcconfig; sourceTree = "<group>"; };
 		1F3D64C9C7A3DB4324F49B49 /* HistoryStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryStoreTests.swift; sourceTree = "<group>"; };
 		1FE6785EABE027D0EE96DCD6 /* SplatVisionTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = SplatVisionTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		20D78D6AF04A2885E5CD246B /* TestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestHelpers.swift; sourceTree = "<group>"; };
@@ -237,9 +238,18 @@
 			path = History;
 			sourceTree = "<group>";
 		};
+		C5CE3EE9F27F101EE61458CC /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				156F705060CE7BB28861CE09 /* Signing.xcconfig */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
 		CBC82AB4F556A99382777A4B = {
 			isa = PBXGroup;
 			children = (
+				C5CE3EE9F27F101EE61458CC /* Config */,
 				52AC1834C09758B46BCF8DE9 /* SplatVision */,
 				34AA95811EF1BCD436DB73D2 /* SplatVisionTests */,
 				16ED0D99A2CEFECF138A1533 /* Products */,
@@ -298,6 +308,7 @@
 				LastUpgradeCheck = 1600;
 				TargetAttributes = {
 					5EDD99C3A413A8A556B01FCC = {
+						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -415,15 +426,14 @@
 /* Begin XCBuildConfiguration section */
 		375BDB5E64032C1A299B0E8F /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 156F705060CE7BB28861CE09 /* Signing.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = SplatVision/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.github.ddwolfer.SplatVision;
 				SDKROOT = xros;
 				TARGETED_DEVICE_FAMILY = 7;
 			};
@@ -431,15 +441,14 @@
 		};
 		3ED25E19A1D75CFD73B76631 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 156F705060CE7BB28861CE09 /* Signing.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = SplatVision/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.github.ddwolfer.SplatVision;
 				SDKROOT = xros;
 				TARGETED_DEVICE_FAMILY = 7;
 			};

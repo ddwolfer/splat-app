@@ -44,10 +44,13 @@ targets:
           UIApplicationPreferredDefaultSceneSessionRole: UIWindowSceneSessionRoleApplication
           UIApplicationSupportsMultipleScenes: true
           UISceneConfigurations: {}
+    # Bundle ID / Team / signing style live in Config/Signing.xcconfig (+ git-ignored Signing.local.xcconfig),
+    # not here: target settings would override the xcconfig and make local overrides useless.
+    configFiles:
+      Debug: Config/Signing.xcconfig
+      Release: Config/Signing.xcconfig
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: io.github.ddwolfer.SplatVision
-        CODE_SIGN_STYLE: Automatic
         TARGETED_DEVICE_FAMILY: "7"
     postCompileScripts:
       # Builds the mock SHARP-style PLY into the app bundle (.ply files are not committed, see CLAUDE.md §7).

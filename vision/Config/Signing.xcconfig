@@ -1,0 +1,12 @@
+// Signing defaults for SplatVision (committed). Do NOT put your Team ID here.
+// Put personal values in Signing.local.xcconfig (git-ignored), e.g.
+//   DEVELOPMENT_TEAM = ABCDE12345
+//   PRODUCT_BUNDLE_IDENTIFIER = io.github.yourname.SplatVision   // only if the default is taken
+// Do not pick a Team in Xcode's Signing & Capabilities UI: that writes it into project.pbxproj.
+
+PRODUCT_BUNDLE_IDENTIFIER = io.github.ddwolfer.SplatVision
+CODE_SIGN_STYLE = Automatic
+DEVELOPMENT_TEAM =
+
+// Must stay last so local values override the defaults above.
+#include? "Signing.local.xcconfig"

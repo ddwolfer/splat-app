@@ -118,7 +118,7 @@ struct UploadImagePreparerTests {
     }
 
     @Test func byteLimitMatchesTheServer() {
-        #expect(UploadImagePreparer.Limits().maxBytes == 20 * 1024 * 1024)  // server/config.py max_upload_bytes
+        #expect(UploadImagePreparer.Limits().maxBytes == 20 * 1024 * 1024)  // API.md: 20 MiB (20,971,520 bytes)
         #expect(UploadImagePreparer.Limits().maxPixels == 40_000_000)
     }
 

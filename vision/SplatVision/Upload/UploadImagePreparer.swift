@@ -39,7 +39,7 @@ enum ImagePrepareError: LocalizedError, Equatable {
 ///   turn black), oriented upright, written as JPEG with the original metadata (EXIF) copied.
 enum UploadImagePreparer {
     struct Limits: Sendable {
-        /// Same as the server (server/config.py: max_upload_bytes = 20 MiB, max_pixels = 40,000,000).
+        /// API.md limits: file ≤ 20 MiB (20,971,520 bytes), ≤ 40,000,000 pixels.
         var maxBytes: Int64 = 20 * 1024 * 1024
         var maxPixels = 40_000_000
         var maxLongEdge = 4096

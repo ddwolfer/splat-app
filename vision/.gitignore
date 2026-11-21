@@ -1,0 +1,2 @@
+# Personal signing settings (Team ID etc.), see Config/Signing.xcconfig
+Config/Signing.local.xcconfig

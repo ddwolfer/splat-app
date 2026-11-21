@@ -32,7 +32,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import make_mock_ply  # noqa: E402  (sibling script in this directory)
 
 SPLAT_PATH = re.compile(r"^/splats/([0-9a-f-]{36})\.ply$")
-MAX_UPLOAD = 20 * 1024 * 1024  # same as server/config.py max_upload_bytes
+MAX_UPLOAD = 20 * 1024 * 1024  # API.md: file <= 20 MiB (20,971,520 bytes)
 
 
 def image_kind(data):
